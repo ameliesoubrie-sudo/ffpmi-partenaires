@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Dossiers partenaires - Espace FFPMI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  main.admin { max-width: 1280px; }
+  .connexion { max-width: 420px; margin: 40px auto; }
+  .connexion .champ { margin-bottom: 16px; }
+  .lien-bouton { background: none; border: 0; padding: 0; font: inherit; font-size: 14px; color: var(--gris); text-decoration: underline; cursor: pointer; }
+  .lien-bouton:hover { color: var(--orange); }
+
+  .barre { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 0 0 18px; }
+  .filtres { display: flex; flex-wrap: wrap; gap: 6px; }
+  .filtre { border: 1.5px solid var(--gris-ligne); background: var(--blanc); border-radius: 999px; padding: 6px 14px; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--gris-fonce); }
+  .filtre .nb { color: var(--gris); margin-left: 4px; }
+  .filtre.actif { border-color: var(--orange); background: var(--orange-pale); color: var(--orange-fonce); }
+  .recherche { flex: 1; min-width: 200px; }
+  .recherche input { width: 100%; font: inherit; font-size: 14px; border: 1.5px solid var(--gris-ligne); border-radius: 999px; padding: 8px 16px; }
+
+  .espace { display: grid; grid-template-columns: minmax(280px, 380px) 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 860px) {
+    .espace { grid-template-columns: 1fr; }
+    .espace.detail-ouvert .liste { display: none; }
+    .espace:not(.detail-ouvert) .detail { display: none; }
+  }
+  .liste { background: var(--blanc); border: 1px solid var(--gris-ligne); border-radius: var(--rayon); overflow: hidden; }
+  .liste .vide { padding: 28px 18px; color: var(--gris); font-size: 14px; text-align: center; }
+  .item { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: center; width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--gris-ligne); background: var(--blanc); padding: 12px 14px; font: inherit; cursor: pointer; }
+  .item:last-child { border-bottom: 0; }
+  .item:hover { background: var(--fond); }
+  .item.choisi { background: var(--orange-pale); box-shadow: inset 4px 0 0 var(--orange); }
+  .item .vignette { width: 44px; height: 44px; border-radius: 8px; background: var(--gris-clair); display: grid; place-items: center; font-weight: 700; color: var(--gris); font-size: 15px; overflow: hidden; }
+  .item .vignette img { width: 100%; height: 100%; object-fit: contain; background: var(--blanc); }
+  .item .nom { font-weight: 600; color: var(--gris-fonce); font-size: 15px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .item .meta { font-size: 12px; color: var(--gris); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 2px; }
+
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .02em; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .st-recu { background: #FEF3DC; color: #8A5B00; }
+  .st-a_etude { background: #E1F2F0; color: #2D6E67; }
+  .st-accepte { background: #EAF4DD; color: #4B6E1C; }
+  .st-refuse { background: var(--gris-clair); color: var(--gris-fonce); }
+  .st-resilie { background: #F1E8E2; color: var(--brun); }
+
+  .onglets { display: flex; gap: 4px; border-bottom: 1px solid var(--gris-ligne); margin: 0 0 20px; overflow-x: auto; }
+  .onglet { appearance: none; background: none; border: 0; border-bottom: 3px solid transparent; font: inherit; font-weight: 600; font-size: 15px; color: var(--gris); padding: 10px 14px; cursor: pointer; white-space: nowrap; margin-bottom: -1px; }
+  .onglet:hover { color: var(--gris-fonce); }
+  .onglet.actif { color: var(--orange-fonce); border-bottom-color: var(--orange); }
+
+  .resume-contrats { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; }
+  .resume-contrats .pastille-resume { background: var(--blanc); border: 1px solid var(--gris-ligne); border-radius: 999px; padding: 6px 14px; font-size: 13px; color: var(--gris-fonce); }
+  .resume-contrats .pastille-resume strong { font-variant-numeric: tabular-nums; margin-right: 4px; }
+  .table-contrats { background: var(--blanc); border: 1px solid var(--gris-ligne); border-radius: var(--rayon); overflow-x: auto; }
+  .table-contrats table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 860px; }
+  .table-contrats th { text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--gris); padding: 12px 14px; border-bottom: 1px solid var(--gris-ligne); background: var(--fond); white-space: nowrap; }
+  .table-contrats td { padding: 10px 14px; border-bottom: 1px solid var(--gris-ligne); vertical-align: middle; }
+  .table-contrats tr:last-child td { border-bottom: 0; }
+  .table-contrats td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .table-contrats .lien-fiche { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; color: var(--gris-fonce); cursor: pointer; text-align: left; }
+  .table-contrats .lien-fiche:hover { color: var(--orange-fonce); text-decoration: underline; }
+  .table-contrats .petit { display: block; font-size: 12px; color: var(--gris); margin-top: 2px; max-width: 280px; }
+  .table-contrats input[type=date] { font: inherit; font-size: 13px; border: 1.5px solid var(--gris-ligne); border-radius: 6px; padding: 5px 6px; background: var(--blanc); color: var(--texte); }
+  .table-contrats input[type=date].vide { border-color: var(--jaune); background: #FFF8EA; }
+  .etat-ct { display: inline-block; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+  .etat-encours { background: #EAF4DD; color: #4B6E1C; }
+  .etat-bientot { background: var(--orange-pale); color: var(--orange-fonce); }
+  .etat-manquant { background: #FEF3DC; color: #8A5B00; }
+  .etat-termine, .etat-resilie { background: var(--gris-clair); color: var(--gris-fonce); }
+
+  .contacts { padding: 20px 24px 22px; border-bottom: 1px solid var(--gris-ligne); }
+  .contacts h3 { margin: 0 0 12px; }
+  .ligne-contact { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)) 36px; gap: 8px; align-items: end; padding: 10px 0; border-top: 1px dashed var(--gris-ligne); }
+  .ligne-contact:first-of-type { border-top: 0; padding-top: 0; }
+  .ligne-contact .role { grid-column: 1 / -1; font-size: 12px; font-weight: 600; color: var(--gris); text-transform: uppercase; letter-spacing: .05em; }
+  .ligne-contact input { width: 100%; font: inherit; font-size: 14px; border: 1.5px solid var(--gris-ligne); border-radius: 6px; padding: 8px 9px; background: var(--blanc); color: var(--texte); }
+  .ligne-contact label { display: block; font-size: 11px; color: var(--gris); margin-bottom: 3px; }
+  .ligne-contact .suppr { width: 36px; height: 38px; border: 1.5px solid var(--gris-ligne); background: var(--blanc); border-radius: 6px; cursor: pointer; color: var(--gris); font-size: 18px; line-height: 1; }
+  .ligne-contact .suppr:hover { color: var(--erreur); border-color: var(--erreur); }
+  @media (max-width: 900px) { .ligne-contact { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ligne-contact .suppr { width: 100%; } }
+  .contacts .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
+  .contacts .etat { font-size: 13px; color: var(--gris); }
+  .documents { padding: 20px 24px 22px; border-bottom: 1px solid var(--gris-ligne); }
+  .documents h3 { margin: 0 0 12px; }
+  .doc { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 10px 0; border-top: 1px dashed var(--gris-ligne); font-size: 14px; }
+  .doc:first-child { border-top: 0; padding-top: 0; }
+  .doc .type-doc { font-size: 11px; font-weight: 600; letter-spacing: .03em; padding: 3px 9px; border-radius: 999px; background: var(--gris-clair); color: var(--gris-fonce); white-space: nowrap; }
+  .doc .type-doc.signe { background: #EAF4DD; color: #4B6E1C; }
+  .doc .nom-doc { font-weight: 500; color: var(--gris-fonce); flex: 1; min-width: 180px; word-break: break-word; }
+  .doc .meta-doc { font-size: 12px; color: var(--gris); white-space: nowrap; }
+  .doc .actions-doc { display: flex; gap: 6px; flex-wrap: wrap; }
+  .ajout-doc { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--gris-ligne); }
+  .ajout-doc select, .ajout-doc input[type=file] { font: inherit; font-size: 14px; }
+  .ajout-doc select { border: 1.5px solid var(--gris-ligne); border-radius: 6px; padding: 7px 8px; background: var(--blanc); color: var(--texte); }
+  .documents .etat, .import-lot .etat { font-size: 13px; color: var(--gris); }
+  .documents .vide-doc { font-size: 14px; color: var(--gris); margin: 0; }
+  .btn-danger { background: var(--erreur); color: var(--blanc); }
+  .import-lot { background: var(--blanc); border: 1px solid var(--gris-ligne); border-radius: var(--rayon); padding: 14px 18px; margin: 0 0 16px; }
+  .import-lot summary { cursor: pointer; font-weight: 600; color: var(--gris-fonce); }
+  .import-lot p { font-size: 13px; color: var(--gris); margin: 10px 0; }
+  .import-lot .ligne-import { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .import-lot ul { font-size: 13px; margin: 10px 0 0; padding-left: 18px; color: var(--gris-fonce); }
+  .table-contrats .relance { display: block; font-size: 12px; color: var(--gris); margin-top: 4px; white-space: nowrap; }
+  .info-import { font-size: 13px; color: var(--brun); background: #F6F0EB; border-radius: 8px; padding: 10px 12px; margin: 10px 24px 0; white-space: pre-wrap; }
+
+  .detail .carte { padding: 0; overflow: hidden; }
+  .entete-dossier { display: flex; gap: 18px; align-items: center; padding: 24px; border-bottom: 1px solid var(--gris-ligne); flex-wrap: wrap; }
+  .entete-dossier .logo { width: 96px; height: 96px; border: 1px solid var(--gris-ligne); border-radius: 10px; display: grid; place-items: center; background: var(--blanc); overflow: hidden; flex-shrink: 0; }
+  .entete-dossier .logo img { max-width: 88px; max-height: 88px; object-fit: contain; }
+  .entete-dossier h2 { margin: 0 0 4px; font-size: 24px; }
+  .entete-dossier .offre { font-weight: 600; color: var(--orange); font-size: 15px; }
+  .entete-dossier .date { font-size: 13px; color: var(--gris); margin-top: 4px; }
+
+  .suivi { background: var(--fond); padding: 18px 24px; border-bottom: 1px solid var(--gris-ligne); display: grid; grid-template-columns: 220px 1fr auto; gap: 14px; align-items: end; }
+  @media (max-width: 760px) { .suivi { grid-template-columns: 1fr; } }
+  .suivi .champ textarea { min-height: 44px; height: 44px; }
+  .suivi .etat { font-size: 13px; color: var(--gris); min-height: 18px; }
+
+  .corps { padding: 8px 24px 28px; }
+  .corps h3 { border-bottom: 1px solid var(--gris-ligne); padding-bottom: 6px; margin-top: 28px; }
+  .corps dl { display: grid; grid-template-columns: minmax(130px, 210px) 1fr; gap: 8px 18px; margin: 0; font-size: 14px; }
+  .corps dt { color: var(--gris); font-weight: 500; }
+  .corps dd { margin: 0; white-space: pre-wrap; word-break: break-word; }
+  .corps a { color: var(--orange-fonce); }
+  @media (max-width: 560px) { .corps dl { grid-template-columns: 1fr; } .corps dd { margin-bottom: 8px; } }
+  .pastille { display: inline-flex; align-items: center; gap: 8px; margin-right: 14px; }
+  .pastille i { width: 22px; height: 22px; border-radius: 6px; border: 1px solid var(--gris-ligne); display: inline-block; }
+  .retour { margin: 0 0 12px; }
+  @media (min-width: 861px) { .retour { display: none; } }
+  .attente { padding: 60px 20px; text-align: center; color: var(--gris); }
+  @media (max-width: 560px) { #session-email { display: none; } .marque .nom { max-width: 140px; } }
+  .detail, .liste, .espace > * { min-width: 0; }
+
+  .contrat { padding: 20px 24px 22px; border-bottom: 1px solid var(--gris-ligne); }
+  .contrat h3 { margin: 0 0 4px; }
+  .contrat .aide-contrat { margin: 0 0 14px; font-size: 13px; color: var(--gris); }
+  .contrat .champ textarea { min-height: 170px; font-size: 14px; }
+  .contrat .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 18px; }
+  .contrat .etat { font-size: 13px; color: var(--gris); }
+  .contrat .choix-liste { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+  .contrat-attente { padding: 14px 24px; font-size: 13px; color: var(--gris); border-bottom: 1px solid var(--gris-ligne); background: var(--fond); }
+</style>
+</head>
+<body>
+<div class="bande"></div>
+<header class="site">
+  <div class="inner">
+    <a class="marque" href="admin.html">
+      <img src="logo-ffpmi.png" alt="FFPMI" onerror="this.remove();document.getElementById('sigle').hidden=false">
+      <span id="sigle" hidden><span class="sigle">FFPMI</span><br><span class="nom">Dossiers partenaires</span></span>
+    </a>
+    <div id="session" hidden style="display:flex;gap:14px;align-items:center;font-size:14px;color:var(--gris)">
+      <span id="session-email"></span>
+      <button class="btn btn-secondaire btn-petit" id="btn-deconnexion" type="button">Se déconnecter</button>
+    </div>
+  </div>
+</header>
+
+<main class="admin">
+  <!-- Connexion -->
+  <section id="vue-connexion" hidden>
+    <div class="carte connexion">
+      <h1 style="font-size:26px">Espace FFPMI</h1>
+      <p class="sous">Accès réservé à la commission partenariats.</p>
+      <div class="alerte alerte-erreur" id="erreur-connexion" role="alert" hidden></div>
+      <div class="alerte alerte-info" id="info-connexion" hidden></div>
+      <form id="form-connexion">
+        <div class="champ"><label for="email">Email</label><input type="email" id="email" required autocomplete="username"></div>
+        <div class="champ"><label for="mdp">Mot de passe</label><input type="password" id="mdp" required autocomplete="current-password"></div>
+        <button class="btn btn-primaire" type="submit" style="width:100%;justify-content:center">Se connecter</button>
+      </form>
+      <p style="text-align:center;margin:16px 0 0"><button class="lien-bouton" id="btn-oubli" type="button">Mot de passe oublié</button></p>
+    </div>
+  </section>
+
+  <!-- Nouveau mot de passe -->
+  <section id="vue-nouveau-mdp" hidden>
+    <div class="carte connexion">
+      <h1 style="font-size:24px">Choisir un nouveau mot de passe</h1>
+      <div class="alerte alerte-erreur" id="erreur-mdp" role="alert" hidden></div>
+      <form id="form-nouveau-mdp">
+        <div class="champ"><label for="mdp1">Nouveau mot de passe</label><input type="password" id="mdp1" required minlength="10" autocomplete="new-password"><p class="aide">10 caractères minimum.</p></div>
+        <div class="champ"><label for="mdp2">Confirmer</label><input type="password" id="mdp2" required minlength="10" autocomplete="new-password"></div>
+        <button class="btn btn-primaire" type="submit" style="width:100%;justify-content:center">Enregistrer</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Refus d'acces -->
+  <section id="vue-refus" hidden>
+    <div class="carte connexion">
+      <h1 style="font-size:24px">Accès non autorisé</h1>
+      <p>Ce compte n'est pas habilité à consulter les dossiers partenaires. Contactez la présidence de la FFPMI pour être ajouté(e).</p>
+    </div>
+  </section>
+
+  <!-- Dossiers -->
+  <section id="vue-dossiers" hidden>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:18px">
+      <div>
+        <h1 style="margin-bottom:4px">Partenaires FFPMI</h1>
+        <p class="sous" style="margin:0" id="resume"></p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-secondaire btn-petit" id="btn-actualiser" type="button">Actualiser</button>
+        <button class="btn btn-secondaire btn-petit" id="btn-export-contacts" type="button">Exporter les contacts</button>
+        <button class="btn btn-secondaire btn-petit" id="btn-export" type="button">Exporter les dossiers</button>
+      </div>
+    </div>
+    <div class="alerte alerte-erreur" id="erreur-dossiers" role="alert" hidden></div>
+    <div class="alerte alerte-info" id="info-export" hidden></div>
+    <div class="onglets" role="tablist">
+      <button class="onglet actif" type="button" role="tab" id="onglet-dossiers" aria-selected="true">Dossiers</button>
+      <button class="onglet" type="button" role="tab" id="onglet-contrats" aria-selected="false">Contrats et échéances</button>
+    </div>
+    <div id="panneau-dossiers">
+    <div class="barre">
+      <div class="filtres" id="filtres"></div>
+      <div class="recherche"><input type="search" id="recherche" placeholder="Rechercher une société, une offre, un contact..." aria-label="Rechercher"></div>
+    </div>
+    <div class="espace" id="espace">
+      <div class="liste" id="liste"></div>
+      <div class="detail" id="detail"><div class="carte attente">Sélectionnez un dossier pour l'afficher.</div></div>
+    </div>
+    </div>
+    <div id="panneau-contrats" hidden>
+      <div class="resume-contrats" id="resume-contrats"></div>
+      <details class="import-lot" id="import-lot">
+        <summary>Ranger les contrats signés existants</summary>
+        <p>Sélectionnez les fichiers du dossier « Contrats signés - import appli ». Chaque fichier contient entre crochets l'identifiant de son partenaire, par exemple « Picto [1a2b3c4d].pdf » : il est rangé automatiquement dans la bonne fiche. Un fichier déjà rangé n'est pas ajouté une deuxième fois.</p>
+        <div class="ligne-import">
+          <input type="file" id="fichiers-lot" multiple accept="application/pdf,image/png,image/jpeg" aria-label="Contrats signés à ranger">
+          <button class="btn btn-primaire btn-petit" type="button" id="btn-import-lot">Ranger les fichiers</button>
+          <span class="etat" id="etat-lot"></span>
+        </div>
+        <ul id="rapport-lot" hidden></ul>
+      </details>
+      <div class="table-contrats" id="table-contrats"></div>
+      <p class="aide" style="font-size:13px;color:var(--gris);margin-top:10px">La date d'effet se modifie directement dans le tableau. Durée, échéance et reconduction se règlent dans le bloc « Contrat de partenariat » de chaque fiche.</p>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="contrat.js"></script>
+<script>
+(function () {
+  "use strict";
+  var CFG = window.FFPMI_CONFIG || {};
+  var BUCKET = CFG.BUCKET || "partenaires";
+  var STATUTS = [
+    { v: "recu", l: "Reçu" },
+    { v: "a_etude", l: "À l'étude" },
+    { v: "accepte", l: "Accepté" },
+    { v: "refuse", l: "Refusé" },
+    { v: "resilie", l: "Résilié" }
+  ];
+  function nomAffiche(d) { return d.nom_commercial || d.raison_sociale || ""; }
+  function libStatut(v) { for (var i = 0; i < STATUTS.length; i++) if (STATUTS[i].v === v) return STATUTS[i].l; return v; }
+
+  function $(id) { return document.getElementById(id); }
+  function el(tag, attrs, enfants) {
+    var n = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      if (k === "texte") n.textContent = attrs[k];
+      else if (k === "classe") n.className = attrs[k];
+      else n.setAttribute(k, attrs[k]);
+    });
+    (enfants || []).forEach(function (c) { if (c) n.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return n;
+  }
+  function vues(nom) {
+    ["connexion", "nouveau-mdp", "refus", "dossiers"].forEach(function (v) { $("vue-" + v).hidden = v !== nom; });
+  }
+  function dateFr(d, avecHeure) {
+    if (!d) return "";
+    var x = new Date(d.length === 10 ? d + "T00:00:00" : d);
+    var o = { day: "2-digit", month: "2-digit", year: "numeric" };
+    if (avecHeure) { o.hour = "2-digit"; o.minute = "2-digit"; }
+    return x.toLocaleString("fr-FR", o);
+  }
+  function initiales(s) { return (s || "?").split(/\s+/).filter(function (m) { return /^[A-Za-zÀ-ÿ0-9]/.test(m); }).slice(0, 2).map(function (m) { return m[0].toUpperCase(); }).join(""); }
+
+  if (!window.supabase || !CFG.SUPABASE_URL || CFG.SUPABASE_URL.indexOf("VOTRE-PROJET") !== -1) {
+    vues("connexion");
+    $("erreur-connexion").textContent = "L'espace n'est pas encore relié à Supabase : renseignez config.js.";
+    $("erreur-connexion").hidden = false;
+    return;
+  }
+
+  var sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+  var dossiers = [];
+  var filtre = "tous";
+  var choisi = null;
+  var urlsSignees = {};
+
+  /* ---------- Connexion ---------- */
+  $("form-connexion").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    $("erreur-connexion").hidden = true;
+    var r = await sb.auth.signInWithPassword({ email: $("email").value.trim(), password: $("mdp").value });
+    if (r.error) { $("erreur-connexion").textContent = "Email ou mot de passe incorrect."; $("erreur-connexion").hidden = false; return; }
+    entrer(r.data.session);
+  });
+
+  $("btn-oubli").addEventListener("click", async function () {
+    var email = $("email").value.trim();
+    $("erreur-connexion").hidden = true;
+    if (!email) { $("erreur-connexion").textContent = "Saisissez d'abord votre email."; $("erreur-connexion").hidden = false; return; }
+    var redirection = location.origin + location.pathname;
+    await sb.auth.resetPasswordForEmail(email, { redirectTo: redirection });
+    $("info-connexion").textContent = "Si ce compte existe, un lien de réinitialisation vient d'être envoyé à " + email + ".";
+    $("info-connexion").hidden = false;
+  });
+
+  $("form-nouveau-mdp").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var a = $("mdp1").value, b = $("mdp2").value;
+    $("erreur-mdp").hidden = true;
+    if (a.length < 10 || a !== b) { $("erreur-mdp").textContent = "Les deux mots de passe doivent être identiques et faire au moins 10 caractères."; $("erreur-mdp").hidden = false; return; }
+    var r = await sb.auth.updateUser({ password: a });
+    if (r.error) { $("erreur-mdp").textContent = r.error.message; $("erreur-mdp").hidden = false; return; }
+    history.replaceState(null, "", location.pathname);
+    var s = await sb.auth.getSession();
+    entrer(s.data.session);
+  });
+
+  $("btn-deconnexion").addEventListener("click", async function () {
+    await sb.auth.signOut();
+    $("session").hidden = true;
+    dossiers = []; choisi = null;
+    vues("connexion");
+  });
+
+  var enRecuperation = false;
+  sb.auth.onAuthStateChange(function (evt) {
+    if (evt === "PASSWORD_RECOVERY") { enRecuperation = true; vues("nouveau-mdp"); }
+  });
+
+  async function entrer(session) {
+    if (!session) { vues("connexion"); return; }
+    $("session-email").textContent = session.user.email;
+    $("session").hidden = false;
+    var r = await sb.rpc("is_admin");
+    if (r.error || r.data !== true) { vues("refus"); return; }
+    vues("dossiers");
+    charger();
+  }
+
+  /* ---------- Chargement ---------- */
+  async function charger() {
+    $("erreur-dossiers").hidden = true;
+    var r = await sb.from("dossiers").select("*").order("created_at", { ascending: false });
+    if (r.error) { $("erreur-dossiers").textContent = "Chargement impossible : " + r.error.message; $("erreur-dossiers").hidden = false; return; }
+    dossiers = r.data || [];
+    var logos = dossiers.map(function (d) { return d.logo_path; }).filter(function (p) { return p && !urlsSignees[p]; });
+    if (logos.length) {
+      var s = await sb.storage.from(BUCKET).createSignedUrls(logos, 3600);
+      (s.data || []).forEach(function (x) { if (x.signedUrl) urlsSignees[x.path] = x.signedUrl; });
+    }
+    rendreFiltres();
+    rendreListe();
+    rendreContrats();
+    if (choisi) {
+      var encore = dossiers.filter(function (d) { return d.id === choisi; })[0];
+      if (encore) rendreDetail(encore);
+    }
+  }
+  $("btn-actualiser").addEventListener("click", charger);
+
+  /* ---------- Filtres et liste ---------- */
+  function rendreFiltres() {
+    var f = $("filtres");
+    f.textContent = "";
+    var options = [{ v: "tous", l: "Tous" }].concat(STATUTS);
+    options.forEach(function (o) {
+      var nb = o.v === "tous" ? dossiers.length : dossiers.filter(function (d) { return d.statut === o.v; }).length;
+      var b = el("button", { type: "button", classe: "filtre" + (filtre === o.v ? " actif" : "") }, [o.l, el("span", { classe: "nb", texte: String(nb) })]);
+      b.addEventListener("click", function () { filtre = o.v; rendreFiltres(); rendreListe(); });
+      f.appendChild(b);
+    });
+    var nouveaux = dossiers.filter(function (d) { return d.statut === "recu"; }).length;
+    $("resume").textContent = dossiers.length + " dossier" + (dossiers.length > 1 ? "s" : "") + (nouveaux ? ", dont " + nouveaux + " à traiter" : "");
+  }
+
+  $("recherche").addEventListener("input", rendreListe);
+
+  function visibles() {
+    var q = $("recherche").value.trim().toLowerCase();
+    return dossiers.filter(function (d) {
+      if (filtre !== "tous" && d.statut !== filtre) return false;
+      if (!q) return true;
+      return [d.nom_commercial, d.raison_sociale, d.offre_titre, d.contact_nom, d.contact_prenom, d.contact_email, d.secteur, d.ville]
+        .join(" ").toLowerCase().indexOf(q) !== -1;
+    });
+  }
+
+  function rendreListe() {
+    var l = $("liste");
+    l.textContent = "";
+    var vs = visibles();
+    if (!vs.length) { l.appendChild(el("div", { classe: "vide", texte: dossiers.length ? "Aucun dossier ne correspond." : "Aucun dossier déposé pour l'instant." })); return; }
+    vs.forEach(function (d) {
+      var vign = el("span", { classe: "vignette" });
+      if (d.logo_path && urlsSignees[d.logo_path]) vign.appendChild(el("img", { src: urlsSignees[d.logo_path], alt: "" }));
+      else vign.textContent = initiales(nomAffiche(d));
+      var b = el("button", { type: "button", classe: "item" + (d.id === choisi ? " choisi" : "") }, [
+        vign,
+        el("span", null, [
+          el("span", { classe: "nom", texte: nomAffiche(d) }),
+          el("span", { classe: "meta" }, [
+            el("span", { classe: "badge st-" + d.statut, texte: libStatut(d.statut) }),
+            el("span", { texte: d.source === "import" ? "Contrat existant" : dateFr(d.created_at) }),
+            el("span", { texte: d.offre_categorie || "" })
+          ])
+        ])
+      ]);
+      b.addEventListener("click", function () { choisi = d.id; rendreListe(); rendreDetail(d); });
+      l.appendChild(b);
+    });
+  }
+
+  /* ---------- Detail ---------- */
+  function lien(url) {
+    if (!url) return null;
+    var a = el("a", { href: url, target: "_blank", rel: "noopener noreferrer", texte: url });
+    return a;
+  }
+  function bloc(titre, lignes) {
+    var dl = el("dl");
+    lignes.forEach(function (l) {
+      var v = l[1];
+      if (v == null || v === "" || (Array.isArray(v) && !v.length)) return;
+      dl.appendChild(el("dt", { texte: l[0] }));
+      var dd = el("dd");
+      if (v instanceof Node) dd.appendChild(v); else dd.textContent = Array.isArray(v) ? v.join(", ") : String(v);
+      dl.appendChild(dd);
+    });
+    return [el("h3", { texte: titre }), dl];
+  }
+  function pastilles(d) {
+    var w = el("span");
+    [d.couleur_principale, d.couleur_secondaire].filter(Boolean).forEach(function (c) {
+      var i = el("i"); i.style.background = c;
+      w.appendChild(el("span", { classe: "pastille" }, [i, c]));
+    });
+    return w.childNodes.length ? w : null;
+  }
+
+  async function rendreDetail(d, message) {
+    $("espace").classList.add("detail-ouvert");
+    var zone = $("detail");
+    zone.textContent = "";
+
+    var retour = el("button", { type: "button", classe: "btn btn-secondaire btn-petit retour", texte: "Retour à la liste" });
+    retour.addEventListener("click", function () { $("espace").classList.remove("detail-ouvert"); });
+    zone.appendChild(retour);
+
+    var carte = el("div", { classe: "carte" });
+    var logoBox = el("div", { classe: "logo" });
+    if (d.logo_path && urlsSignees[d.logo_path]) logoBox.appendChild(el("img", { src: urlsSignees[d.logo_path], alt: "Logo " + d.raison_sociale }));
+    else logoBox.textContent = initiales(nomAffiche(d));
+    var origine = d.source === "import"
+      ? "Importé depuis les contrats existants" + (d.updated_at && d.updated_at !== d.created_at ? " - mis à jour le " + dateFr(d.updated_at, true) : "")
+      : "Déposé le " + dateFr(d.created_at, true) + (d.updated_at && d.updated_at !== d.created_at ? " - mis à jour le " + dateFr(d.updated_at, true) : "");
+    carte.appendChild(el("div", { classe: "entete-dossier" }, [
+      logoBox,
+      el("div", null, [
+        el("h2", { texte: nomAffiche(d) }),
+        d.nom_commercial && d.nom_commercial !== d.raison_sociale ? el("div", { classe: "date", style: "margin:0 0 4px", texte: d.raison_sociale }) : null,
+        el("div", { classe: "offre", texte: d.offre_titre || "" }),
+        el("div", { classe: "date", texte: origine })
+      ])
+    ]));
+
+    // Suivi
+    var sel = el("select", { id: "f-statut" });
+    STATUTS.forEach(function (s) { var o = el("option", { value: s.v, texte: s.l }); if (s.v === d.statut) o.selected = true; sel.appendChild(o); });
+    var notes = el("textarea", { id: "f-notes", placeholder: "Notes internes, visibles uniquement par la FFPMI" });
+    notes.value = d.notes_internes || "";
+    var etat = el("div", { classe: "etat", texte: message || "" });
+    var enr = el("button", { type: "button", classe: "btn btn-primaire", texte: "Enregistrer" });
+    enr.addEventListener("click", async function () {
+      enr.disabled = true; etat.textContent = "Enregistrement...";
+      var r = await sb.from("dossiers").update({ statut: sel.value, notes_internes: notes.value.trim() || null }).eq("id", d.id).select().single();
+      enr.disabled = false;
+      if (r.error) { etat.textContent = "Erreur : " + r.error.message; return; }
+      for (var i = 0; i < dossiers.length; i++) if (dossiers[i].id === d.id) dossiers[i] = r.data;
+      d = r.data;
+      rendreFiltres(); rendreListe(); rendreContrats();
+      rendreDetail(d, "Enregistré.");
+    });
+    carte.appendChild(el("div", { classe: "suivi" }, [
+      el("div", { classe: "champ" }, [el("label", { for: "f-statut", texte: "Statut" }), sel]),
+      el("div", { classe: "champ" }, [el("label", { for: "f-notes", texte: "Notes internes" }), notes]),
+      el("div", null, [enr, etat])
+    ]));
+
+    if (d.source === "import" && d.contrat && d.contrat.a_verifier && d.contrat.a_verifier.length) {
+      carte.appendChild(el("div", { classe: "info-import", texte: "À vérifier (import) :\n- " + d.contrat.a_verifier.join("\n- ") }));
+    }
+
+    // Contacts
+    carte.appendChild(sectionContacts(d));
+
+    // Documents (contrats signes, avenants...)
+    carte.appendChild(sectionDocuments(d));
+
+    // Contrat de partenariat
+    if (window.FFPMI_CONTRAT) {
+      if (d.statut === "accepte" || d.statut === "resilie") carte.appendChild(sectionContrat(d));
+      else carte.appendChild(el("div", { classe: "contrat-attente", texte: "Le contrat de partenariat pourra être généré une fois le dossier passé au statut « Accepté »." }));
+    }
+
+    // Pieces jointes
+    var pj = el("span");
+    async function boutonFichier(path, libelle, nomFichier) {
+      var r = await sb.storage.from(BUCKET).createSignedUrl(path, 3600, { download: nomFichier });
+      if (r.data && r.data.signedUrl) {
+        pj.appendChild(el("a", { href: r.data.signedUrl, classe: "btn btn-secondaire btn-petit", style: "margin:0 8px 8px 0", texte: libelle }));
+      }
+    }
+    var base = (d.raison_sociale || "partenaire").replace(/[^\w\-]+/g, "_");
+    if (d.logo_path) await boutonFichier(d.logo_path, "Télécharger le logo", base + "_logo." + d.logo_path.split(".").pop());
+    if (d.plaquette_path) await boutonFichier(d.plaquette_path, "Télécharger la plaquette", base + "_plaquette.pdf");
+
+    var corps = el("div", { classe: "corps" });
+    var reseaux = el("span");
+    [["Instagram", d.reseau_instagram], ["Facebook", d.reseau_facebook], ["LinkedIn", d.reseau_linkedin], ["YouTube", d.reseau_youtube]]
+      .filter(function (x) { return x[1]; })
+      .forEach(function (x, i) { if (i) reseaux.appendChild(document.createTextNode("\n")); reseaux.appendChild(document.createTextNode(x[0] + " : ")); reseaux.appendChild(lien(x[1])); });
+
+
+    var validite = (d.offre_debut || d.offre_fin) ? ("du " + (dateFr(d.offre_debut) || "...") + " au " + (dateFr(d.offre_fin) || "...")) : "Permanente";
+
+    [].concat(
+      bloc("Offre adhérents", [
+        ["Catégorie", d.offre_categorie],
+        ["Avantage", d.avantage_type + " : " + d.avantage_valeur],
+        ["Description", d.offre_description],
+        ["Conditions", d.offre_conditions],
+        ["Validité", validite],
+        ["Modalités d'accès", d.offre_modalites],
+        ["Exclusive FFPMI", d.offre_exclusive ? "Oui" : "Non"],
+        ["Visibilité souhaitée", d.contreparties]
+      ]),
+      bloc("Société", [
+        ["Raison sociale", d.raison_sociale],
+        ["Nom commercial", d.nom_commercial],
+        ["Forme juridique", d.forme_juridique],
+        ["SIRET", d.siret ? d.siret.replace(/^(\d{3})(\d{3})(\d{3})(\d{5})$/, "$1 $2 $3 $4") : ""],
+        ["Adresse", [d.adresse, (d.code_postal || "") + " " + (d.ville || ""), d.pays].filter(Boolean).join("\n")],
+        ["Site internet", lien(d.site_web)],
+        ["Secteur", d.secteur],
+        ["Année de création", d.annee_creation],
+        ["Effectif", d.effectif]
+      ]),
+      bloc("Présentation", [
+        ["Présentation", d.presentation],
+        ["Lien métiers de l'image", d.lien_metiers_image],
+        ["Références", d.references_clients]
+      ]),
+      bloc("Identité", [
+        ["Pièces jointes", pj.childNodes.length ? pj : null],
+        ["Accroche", d.slogan],
+        ["Couleurs", pastilles(d)],
+        ["Réseaux sociaux", reseaux.childNodes.length ? reseaux : null]
+      ])
+    ).forEach(function (n) { corps.appendChild(n); });
+
+    carte.appendChild(corps);
+    zone.appendChild(carte);
+    if (window.innerWidth <= 860) window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  /* ---------- Contrat de partenariat ---------- */
+  function versDataUrl(url) {
+    return fetch(url)
+      .then(function (r) { if (!r.ok) throw new Error(); return r.blob(); })
+      .then(function (b) {
+        return new Promise(function (res) {
+          var fr = new FileReader();
+          fr.onload = function () { res(fr.result); };
+          fr.onerror = function () { res(null); };
+          fr.readAsDataURL(b);
+        });
+      })
+      .catch(function () { return null; });
+  }
+
+  function sectionContrat(d) {
+    var C = window.FFPMI_CONTRAT, F = CFG.FFPMI;
+    var base = C.defauts(d, F);
+    var c = Object.assign({}, base, d.contrat || {});
+    c.engagements = Object.assign({}, base.engagements, (d.contrat && d.contrat.engagements) || {});
+
+    var box = el("div", { classe: "contrat" });
+    box.appendChild(el("h3", { texte: "Contrat de partenariat" }));
+    if (d.source === "import" && !d.contrat_genere_le) box.appendChild(el("p", { classe: "aide-contrat", texte: "Contrat signé avant la mise en place de l'appli : renseignez ici sa date d'effet, sa durée et son échéance pour le suivi. Le bouton PDF génère un nouveau contrat au modèle actuel, par exemple pour un renouvellement." }));
+    box.appendChild(el("p", { classe: "aide-contrat", texte: d.contrat_genere_le
+      ? "Dernier PDF généré le " + dateFr(d.contrat_genere_le, true) + ". Vous pouvez modifier les informations et le générer à nouveau."
+      : "Les informations sont reprises du dossier. Vérifiez-les et complétez-les, puis générez le PDF à envoyer pour signature." }));
+
+    var champs = {};
+    function champ(id, libelle, input, plein, aide) {
+      input.id = "ct-" + id;
+      champs[id] = input;
+      var enfants = [el("label", { for: input.id, texte: libelle }), input];
+      if (aide) enfants.push(el("p", { classe: "aide", texte: aide }));
+      return el("div", { classe: "champ" + (plein ? " plein" : "") }, enfants);
+    }
+    function texte(v, ph) { var i = el("input", { type: "text" }); i.value = v || ""; if (ph) i.placeholder = ph; return i; }
+    function date(v) { var i = el("input", { type: "date" }); i.value = v || ""; return i; }
+
+    var duree = el("select");
+    [[1, "1 an"], [2, "2 ans"], [3, "3 ans"]].forEach(function (o) {
+      var op = el("option", { value: String(o[0]), texte: o[1] });
+      if (String(c.duree) === String(o[0])) op.selected = true;
+      duree.appendChild(op);
+    });
+    var echeance = el("select");
+    [["anniversaire", "À la date anniversaire"], ["civile", "Au 31 décembre (année civile)"]].forEach(function (o) {
+      var op = el("option", { value: o[0], texte: o[1] });
+      if ((c.echeance || "anniversaire") === o[0]) op.selected = true;
+      echeance.appendChild(op);
+    });
+    var reconduction = el("input", { type: "checkbox", id: "ct-reconduction" });
+    reconduction.checked = c.reconduction !== false;
+    var avantages = el("textarea");
+    avantages.value = c.avantages || "";
+
+    var grille = el("div", { classe: "grille" }, [
+      champ("signataire", "Signataire pour le partenaire", texte(c.signataire), false, "Le représentant légal ou une personne habilitée à signer."),
+      champ("qualite", "Qualité du signataire", texte(c.qualite, "Ex. : Gérant, Président, Directeur commercial")),
+      champ("immatriculation", "Immatriculation complémentaire", texte(c.immatriculation, "Ex. : ORIAS 18000812, RCS Paris 123 456 789"), true, "Facultatif. Le SIRET du dossier figure déjà dans le contrat."),
+      champ("date_effet", "Date d'effet", date(c.date_effet)),
+      champ("duree", "Durée initiale", duree, false, "Renouvelable ensuite par tacite reconduction."),
+      champ("lieu", "Lieu de signature", texte(c.lieu)),
+      champ("date_signature", "Date de signature", date(c.date_signature), false, "Laissez vide pour la compléter à la main."),
+      champ("echeance", "Échéance annuelle", echeance, false, "Les contrats de 2022 Lumys et Matisseo suivent l'année civile."),
+      champ("date_fin", "Date de fin du partenariat", date(c.date_fin), false, "Seulement si le partenariat est terminé ou résilié."),
+      el("div", { classe: "champ plein" }, [el("label", { classe: "choix", for: "ct-reconduction", style: "max-width:520px" }, [reconduction, el("span", { texte: "Renouvellement par tacite reconduction" })])]),
+      champ("avantages", "Détail de l'offre (annexe 1 du contrat)", avantages, true, "Repris du dossier. Corrigez ou complétez si l'offre a été ajustée avec le partenaire.")
+    ]);
+    box.appendChild(grille);
+
+    var liste = el("div", { classe: "choix-liste" });
+    var cases = {};
+    C.ENGAGEMENTS.forEach(function (e) {
+      var cb = el("input", { type: "checkbox", id: "ct-eng-" + e.cle });
+      cb.checked = !!c.engagements[e.cle];
+      cases[e.cle] = cb;
+      liste.appendChild(el("label", { classe: "choix", for: cb.id }, [cb, el("span", { texte: e.libelle })]));
+    });
+    box.appendChild(el("div", { classe: "champ", style: "margin-top:18px" }, [
+      el("span", { classe: "label", texte: "Engagements de la FFPMI (article 4)" }),
+      liste,
+      el("p", { classe: "aide", texte: "Cochés d'après la visibilité demandée par le partenaire. La présence au Congrès et aux événements renvoie toujours à une convention distincte." })
+    ]));
+
+    function lire() {
+      var eng = {};
+      Object.keys(cases).forEach(function (k) { eng[k] = cases[k].checked; });
+      return {
+        signataire: champs.signataire.value.trim(),
+        qualite: champs.qualite.value.trim(),
+        immatriculation: champs.immatriculation.value.trim(),
+        date_effet: champs.date_effet.value || base.date_effet,
+        duree: parseInt(champs.duree.value, 10) || 1,
+        lieu: champs.lieu.value.trim(),
+        date_signature: champs.date_signature.value || "",
+        echeance: champs.echeance.value || "anniversaire",
+        date_fin: champs.date_fin.value || "",
+        reconduction: reconduction.checked,
+        avantages: champs.avantages.value.trim(),
+        engagements: eng
+      };
+    }
+
+    var etat = el("span", { classe: "etat" });
+    var bEnr = el("button", { type: "button", classe: "btn btn-secondaire", texte: "Enregistrer les informations" });
+    var bPdf = el("button", { type: "button", classe: "btn btn-primaire", texte: "Générer le PDF du contrat" });
+
+    async function enregistrer(maj) {
+      var r = await sb.from("dossiers").update(maj).eq("id", d.id).select().single();
+      if (r.error) throw new Error(r.error.message);
+      for (var i = 0; i < dossiers.length; i++) if (dossiers[i].id === d.id) dossiers[i] = r.data;
+      d = r.data;
+    }
+
+    bEnr.addEventListener("click", async function () {
+      bEnr.disabled = true; etat.textContent = "Enregistrement...";
+      try { await enregistrer({ contrat: lire() }); etat.textContent = "Informations enregistrées."; rendreContrats(); }
+      catch (e) { etat.textContent = "Erreur : " + e.message; }
+      bEnr.disabled = false;
+    });
+
+    bPdf.addEventListener("click", async function () {
+      if (!F || !F.siret) { etat.textContent = "Complétez d'abord le bloc FFPMI dans config.js (SIRET, adresse, signataire)."; return; }
+      if (!window.pdfMake) { etat.textContent = "Le module PDF ne s'est pas chargé. Vérifiez votre connexion et actualisez la page."; return; }
+      var cc = lire();
+      if (!cc.signataire) { champs.signataire.focus(); etat.textContent = "Indiquez le signataire pour le partenaire."; return; }
+      bPdf.disabled = true; etat.textContent = "Création du PDF...";
+      try {
+        var imgF = document.querySelector(".marque img");
+        var logoF = await versDataUrl(imgF ? imgF.src : "logo-ffpmi.png");
+        var logoP = null;
+        if (d.logo_path && /\.(png|jpe?g)$/i.test(d.logo_path) && urlsSignees[d.logo_path]) logoP = await versDataUrl(urlsSignees[d.logo_path]);
+        var doc = window.FFPMI_CONTRAT.construire(d, cc, F, logoF, logoP);
+        var nom = "Contrat partenariat FFPMI - " + (d.raison_sociale || "partenaire").replace(/[\\\/:*?"<>|]+/g, " ").trim() + ".pdf";
+        var pdf = window.pdfMake.createPdf(doc);
+        if (window.FFPMI_DEMO) {
+          await new Promise(function (res) { pdf.getBlob(function (b) { etat.textContent = "Aperçu : le contrat a bien été créé (" + Math.round(b.size / 1024) + " Ko), mais le téléchargement est désactivé ici."; res(); }); });
+        } else {
+          pdf.download(nom);
+          await enregistrer({ contrat: cc, contrat_genere_le: new Date().toISOString() });
+          rendreContrats();
+          etat.textContent = "PDF téléchargé.";
+        }
+      } catch (e) {
+        console.error(e);
+        etat.textContent = "La création du PDF a échoué : " + (e.message || e);
+      }
+      bPdf.disabled = false;
+    });
+
+    box.appendChild(el("div", { classe: "actions" }, [bPdf, bEnr, etat]));
+    return box;
+  }
+
+  /* ---------- Contacts du partenaire ---------- */
+  function sectionContacts(d) {
+    var box = el("div", { classe: "contacts" });
+    box.appendChild(el("h3", { texte: "Contacts du partenaire" }));
+    var zone = el("div");
+    box.appendChild(zone);
+    var CH = [["prenom", "Prénom"], ["nom", "Nom"], ["fonction", "Fonction"], ["email", "Email"], ["telephone", "Téléphone"]];
+    var lignes = [];
+    var n = 0;
+
+    function ajouterLigne(c, principal) {
+      n++;
+      var ligne = el("div", { classe: "ligne-contact" });
+      ligne.appendChild(el("div", { classe: "role", texte: principal ? "Contact principal" : "Autre contact" }));
+      var inputs = {};
+      CH.forEach(function (f) {
+        var id = "ctc-" + d.id + "-" + n + "-" + f[0];
+        var inp = el("input", { type: f[0] === "email" ? "email" : (f[0] === "telephone" ? "tel" : "text"), id: id });
+        inp.value = (c && c[f[0]]) || "";
+        inputs[f[0]] = inp;
+        ligne.appendChild(el("div", null, [el("label", { for: id, texte: f[1] }), inp]));
+      });
+      if (principal) ligne.appendChild(el("span"));
+      else {
+        var s = el("button", { type: "button", classe: "suppr", title: "Retirer ce contact", "aria-label": "Retirer ce contact", texte: "×" });
+        s.addEventListener("click", function () { ligne.remove(); lignes = lignes.filter(function (x) { return x.ligne !== ligne; }); });
+        ligne.appendChild(s);
+      }
+      zone.appendChild(ligne);
+      lignes.push({ ligne: ligne, inputs: inputs, principal: principal });
+    }
+
+    ajouterLigne({ prenom: d.contact_prenom, nom: d.contact_nom, fonction: d.contact_fonction, email: d.contact_email, telephone: d.contact_telephone }, true);
+    (d.autres_contacts || []).forEach(function (c) { ajouterLigne(c, false); });
+
+    var etat = el("span", { classe: "etat" });
+    var bAjout = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Ajouter un contact" });
+    bAjout.addEventListener("click", function () { ajouterLigne({}, false); });
+    var bEnr = el("button", { type: "button", classe: "btn btn-primaire btn-petit", texte: "Enregistrer les contacts" });
+    bEnr.addEventListener("click", async function () {
+      var lire = function (l) { var o = {}; CH.forEach(function (f) { o[f[0]] = l.inputs[f[0]].value.trim(); }); return o; };
+      var p0 = lire(lignes[0]);
+      var autres = lignes.slice(1).map(lire).filter(function (o) { return o.prenom || o.nom || o.email || o.telephone; });
+      var mauvais = [p0].concat(autres).filter(function (o) { return o.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(o.email); });
+      if (mauvais.length) { etat.textContent = "Adresse email invalide : " + mauvais[0].email; return; }
+      bEnr.disabled = true; etat.textContent = "Enregistrement...";
+      var r = await sb.from("dossiers").update({
+        contact_prenom: p0.prenom || null, contact_nom: p0.nom || null, contact_fonction: p0.fonction || null,
+        contact_email: p0.email ? p0.email.toLowerCase() : null, contact_telephone: p0.telephone || null,
+        autres_contacts: autres
+      }).eq("id", d.id).select().single();
+      bEnr.disabled = false;
+      if (r.error) { etat.textContent = "Erreur : " + r.error.message; return; }
+      for (var i = 0; i < dossiers.length; i++) if (dossiers[i].id === d.id) dossiers[i] = r.data;
+      d = r.data;
+      etat.textContent = "Contacts enregistrés.";
+      rendreListe();
+    });
+    box.appendChild(el("div", { classe: "actions" }, [bEnr, bAjout, etat]));
+    return box;
+  }
+
+  /* ---------- Documents ---------- */
+  var TYPES_DOC = ["Contrat signé", "Avenant", "Courrier", "Autre"];
+  function nbSignes(d) { return (d.documents || []).filter(function (x) { return x.type === "Contrat signé"; }).length; }
+  function remplacerDossier(nd) { for (var i = 0; i < dossiers.length; i++) if (dossiers[i].id === nd.id) dossiers[i] = nd; }
+  function nomFichierSur(n) {
+    return n.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\w.\-]+/g, "-").replace(/-+/g, "-").slice(-90);
+  }
+  function tailleTxt(o) { return o > 1048576 ? (o / 1048576).toFixed(1).replace(".", ",") + " Mo" : Math.max(1, Math.round(o / 1024)) + " Ko"; }
+
+  async function ajouterDocument(d, fichier, type) {
+    if (!/^(application\/pdf|image\/(png|jpeg))$/.test(fichier.type) || fichier.size > 25 * 1048576) {
+      throw new Error("« " + fichier.name + " » : seuls les PDF, JPG et PNG de 25 Mo maximum sont acceptés.");
+    }
+    var chemin = d.id + "/documents/" + Date.now() + "-" + nomFichierSur(fichier.name);
+    var up = await sb.storage.from(BUCKET).upload(chemin, fichier, { contentType: fichier.type, upsert: false });
+    if (up.error) throw new Error("« " + fichier.name + " » : " + up.error.message);
+    var liste = (d.documents || []).concat([{ path: chemin, nom: fichier.name, type: type, taille: fichier.size, ajoute_le: new Date().toISOString() }]);
+    var r = await sb.from("dossiers").update({ documents: liste }).eq("id", d.id).select().single();
+    if (r.error) throw new Error(r.error.message);
+    remplacerDossier(r.data);
+    return r.data;
+  }
+
+  function sectionDocuments(d) {
+    var box = el("div", { classe: "documents" });
+    box.appendChild(el("h3", { texte: "Documents" }));
+    var liste = el("div");
+    box.appendChild(liste);
+    var etat = el("span", { classe: "etat" });
+
+    function rendre() {
+      liste.textContent = "";
+      var docs = (d.documents || []).slice().sort(function (a, b) { return (b.ajoute_le || "").localeCompare(a.ajoute_le || ""); });
+      if (!docs.length) { liste.appendChild(el("p", { classe: "vide-doc", texte: "Aucun document pour l'instant. Ajoutez ici le contrat signé, les avenants ou les courriers." })); return; }
+      docs.forEach(function (doc) {
+        var bDl = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Télécharger" });
+        bDl.addEventListener("click", async function () {
+          var r = await sb.storage.from(BUCKET).createSignedUrl(doc.path, 300, { download: doc.nom });
+          if (r.data && r.data.signedUrl) { var a = el("a", { href: r.data.signedUrl }); document.body.appendChild(a); a.click(); a.remove(); }
+          else etat.textContent = window.FFPMI_DEMO ? "Aperçu : le téléchargement est désactivé ici." : "Le fichier est introuvable.";
+        });
+        var bSup = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Supprimer" });
+        var actions = el("span", { classe: "actions-doc" }, [bDl, bSup]);
+        bSup.addEventListener("click", function () {
+          actions.textContent = "";
+          var oui = el("button", { type: "button", classe: "btn btn-danger btn-petit", texte: "Confirmer la suppression" });
+          var non = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Annuler" });
+          non.addEventListener("click", rendre);
+          oui.addEventListener("click", async function () {
+            oui.disabled = true;
+            var rm = await sb.storage.from(BUCKET).remove([doc.path]);
+            if (rm && rm.error) { etat.textContent = "Erreur : " + rm.error.message; rendre(); return; }
+            var r = await sb.from("dossiers").update({ documents: (d.documents || []).filter(function (x) { return x.path !== doc.path; }) }).eq("id", d.id).select().single();
+            if (r.error) { etat.textContent = "Erreur : " + r.error.message; return; }
+            remplacerDossier(r.data); d = r.data;
+            etat.textContent = "Document supprimé.";
+            rendre(); rendreContrats();
+          });
+          actions.appendChild(oui); actions.appendChild(non);
+        });
+        liste.appendChild(el("div", { classe: "doc" }, [
+          el("span", { classe: "type-doc" + (doc.type === "Contrat signé" ? " signe" : ""), texte: doc.type || "Document" }),
+          el("span", { classe: "nom-doc", texte: doc.nom }),
+          el("span", { classe: "meta-doc", texte: [doc.ajoute_le ? "ajouté le " + dateFr(doc.ajoute_le) : "", doc.taille ? tailleTxt(doc.taille) : ""].filter(Boolean).join(" - ") }),
+          actions
+        ]));
+      });
+    }
+    rendre();
+
+    var type = el("select", { id: "doc-type-" + d.id, "aria-label": "Type de document" });
+    TYPES_DOC.forEach(function (x) { type.appendChild(el("option", { value: x, texte: x })); });
+    var fichier = el("input", { type: "file", id: "doc-fichier-" + d.id, accept: "application/pdf,image/png,image/jpeg", "aria-label": "Fichier à ajouter" });
+    var bAjout = el("button", { type: "button", classe: "btn btn-primaire btn-petit", texte: "Ajouter le document" });
+    bAjout.addEventListener("click", async function () {
+      if (!fichier.files[0]) { etat.textContent = "Choisissez d'abord un fichier."; return; }
+      bAjout.disabled = true; etat.textContent = "Envoi en cours...";
+      try {
+        d = await ajouterDocument(d, fichier.files[0], type.value);
+        fichier.value = ""; etat.textContent = "Document ajouté.";
+        rendre(); rendreContrats();
+      } catch (e) { etat.textContent = e.message; }
+      bAjout.disabled = false;
+    });
+    box.appendChild(el("div", { classe: "ajout-doc" }, [type, fichier, bAjout, etat]));
+    box.appendChild(el("p", { classe: "aide", style: "font-size:12px;color:var(--gris);margin:8px 0 0", texte: "PDF, JPG ou PNG, 25 Mo maximum. Les documents ne sont visibles que dans l'espace FFPMI." }));
+    return box;
+  }
+
+  // Rangement en lot des contrats deja signes (fichiers nommes "Partenaire [identifiant].pdf")
+  $("btn-import-lot").addEventListener("click", async function () {
+    var fichiers = Array.prototype.slice.call($("fichiers-lot").files);
+    var rapport = $("rapport-lot");
+    if (!fichiers.length) { $("etat-lot").textContent = "Sélectionnez d'abord les fichiers."; return; }
+    var bouton = this;
+    bouton.disabled = true;
+    rapport.textContent = ""; rapport.hidden = false;
+    var ajoutes = 0, ignores = 0;
+    for (var k = 0; k < fichiers.length; k++) {
+      var f = fichiers[k];
+      $("etat-lot").textContent = "Fichier " + (k + 1) + " sur " + fichiers.length + "...";
+      var m = f.name.match(/\[([0-9a-f]{8})\]/i);
+      var cibles = m ? dossiers.filter(function (d) { return d.id.indexOf(m[1].toLowerCase()) === 0; }) : [];
+      var ligne = function (txt) { rapport.appendChild(el("li", { texte: txt })); };
+      if (cibles.length !== 1) { ignores++; ligne(f.name + " : partenaire non reconnu, fichier ignoré."); continue; }
+      var d = cibles[0];
+      if ((d.documents || []).some(function (x) { return x.nom === f.name; })) { ignores++; ligne(f.name + " : déjà rangé dans la fiche " + nomAffiche(d) + "."); continue; }
+      var typeDoc = /r[ée]siliation|courrier/i.test(f.name) ? "Courrier" : "Contrat signé";
+      try { await ajouterDocument(d, f, typeDoc); ajoutes++; }
+      catch (e) { ignores++; ligne(e.message); }
+    }
+    $("etat-lot").textContent = ajoutes + " fichier" + (ajoutes > 1 ? "s rangés" : " rangé") + (ignores ? ", " + ignores + " ignoré" + (ignores > 1 ? "s" : "") : "") + ".";
+    if (!rapport.childNodes.length) rapport.hidden = true;
+    $("fichiers-lot").value = "";
+    bouton.disabled = false;
+    rendreContrats();
+    if (choisi) { var c = dossiers.filter(function (d) { return d.id === choisi; })[0]; if (c) rendreDetail(c); }
+  });
+
+  /* ---------- Onglets ---------- */
+  function ouvrirOnglet(nom) {
+    var dossiersActif = nom === "dossiers";
+    $("panneau-dossiers").hidden = !dossiersActif;
+    $("panneau-contrats").hidden = dossiersActif;
+    $("onglet-dossiers").classList.toggle("actif", dossiersActif);
+    $("onglet-contrats").classList.toggle("actif", !dossiersActif);
+    $("onglet-dossiers").setAttribute("aria-selected", String(dossiersActif));
+    $("onglet-contrats").setAttribute("aria-selected", String(!dossiersActif));
+    if (!dossiersActif) rendreContrats();
+  }
+  $("onglet-dossiers").addEventListener("click", function () { ouvrirOnglet("dossiers"); });
+  $("onglet-contrats").addEventListener("click", function () { ouvrirOnglet("contrats"); });
+
+  /* ---------- Contrats et echeances ---------- */
+  function versDate(iso) { return iso ? new Date(iso.slice(0, 10) + "T12:00:00") : null; }
+  function versIso(dt) { return dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0") + "-" + String(dt.getDate()).padStart(2, "0"); }
+  function plusAns(dt, n) { var x = new Date(dt.getTime()); x.setFullYear(x.getFullYear() + n); return x; }
+
+  // Etat du contrat d'un partenaire, calcule a partir de la date d'effet enregistree
+  function infoContrat(d) {
+    var c = d.contrat || {};
+    var auj = new Date(); auj.setHours(12, 0, 0, 0);
+    if (d.statut === "resilie") {
+      return { etat: "resilie", libelle: "Résilié" + (c.date_fin ? " le " + dateFr(c.date_fin) : ""), ordre: 5 };
+    }
+    if (c.date_fin && versDate(c.date_fin) <= auj) {
+      return { etat: "termine", libelle: "Terminé le " + dateFr(c.date_fin), ordre: 4 };
+    }
+    var eff = versDate(c.date_effet);
+    if (!eff) return { etat: "manquant", libelle: "Date d'effet à renseigner", ordre: 0 };
+    var duree = parseInt(c.duree, 10) || 1;
+    var recon = c.reconduction !== false;
+    var ech;
+    if (c.echeance === "civile") {
+      ech = new Date(eff.getFullYear() + duree - 1, 11, 31, 12);
+      while (recon && ech < auj) ech = new Date(ech.getFullYear() + 1, 11, 31, 12);
+    } else {
+      ech = plusAns(eff, duree);
+      while (recon && ech < auj) ech = plusAns(ech, duree);
+    }
+    if (ech < auj) return { etat: "termine", libelle: "Terminé le " + dateFr(versIso(ech)), echeance: ech, ordre: 4 };
+    var preavis = new Date(ech.getTime() - 30 * 86400000);
+    var jours = Math.round((ech - auj) / 86400000);
+    if (jours <= 60) {
+      return { etat: "bientot", libelle: preavis < auj ? "Échéance dans " + jours + " j, préavis dépassé" : "Échéance dans " + jours + " j", echeance: ech, preavis: preavis, ordre: 1 };
+    }
+    return { etat: "encours", libelle: "En cours", echeance: ech, preavis: preavis, ordre: 2 };
+  }
+
+  function partenairesSuivis() {
+    return dossiers.filter(function (d) { return d.statut === "accepte" || d.statut === "resilie"; });
+  }
+
+  function rendreContrats() {
+    var zone = $("table-contrats");
+    if (!zone) return;
+    var liste = partenairesSuivis().map(function (d) { return { d: d, i: infoContrat(d) }; });
+    liste.sort(function (a, b) {
+      if (a.i.ordre !== b.i.ordre) return a.i.ordre - b.i.ordre;
+      if (a.i.echeance && b.i.echeance) return a.i.echeance - b.i.echeance;
+      return nomAffiche(a.d).localeCompare(nomAffiche(b.d), "fr");
+    });
+
+    var compte = function (e) { return liste.filter(function (x) { return x.i.etat === e; }).length; };
+    var res = $("resume-contrats");
+    res.textContent = "";
+    [[compte("encours") + compte("bientot"), "contrats en cours"], [compte("bientot"), "échéances dans les 60 jours"], [compte("manquant"), "dates d'effet à renseigner"], [compte("resilie") + compte("termine"), "terminés ou résiliés"]]
+      .forEach(function (x) { res.appendChild(el("span", { classe: "pastille-resume" }, [el("strong", { texte: String(x[0]) }), " " + x[1]])); });
+
+    zone.textContent = "";
+    if (!liste.length) { zone.appendChild(el("div", { classe: "vide", style: "padding:28px 18px;color:var(--gris);text-align:center", texte: "Aucun partenaire accepté pour l'instant." })); return; }
+
+    var table = el("table");
+    var thead = el("thead", null, [el("tr", null, ["Partenaire", "Date d'effet", "Durée", "Prochaine échéance", "Dénoncer avant le", "Contrat signé", "État"].map(function (h) { return el("th", { texte: h }); }))]);
+    var tbody = el("tbody");
+    liste.forEach(function (x) {
+      var d = x.d, i = x.i, c = d.contrat || {};
+      var ouvrir = el("button", { type: "button", classe: "lien-fiche", texte: nomAffiche(d) });
+      ouvrir.addEventListener("click", function () { choisi = d.id; ouvrirOnglet("dossiers"); rendreListe(); rendreDetail(d); });
+      var dateInput = el("input", { type: "date", id: "eff-" + d.id, "aria-label": "Date d'effet du contrat " + nomAffiche(d) });
+      dateInput.value = c.date_effet || "";
+      if (!c.date_effet) dateInput.classList.add("vide");
+      dateInput.addEventListener("change", async function () {
+        var nouveau = Object.assign({}, d.contrat || {}, { date_effet: dateInput.value || null });
+        dateInput.disabled = true;
+        var r = await sb.from("dossiers").update({ contrat: nouveau }).eq("id", d.id).select().single();
+        dateInput.disabled = false;
+        if (r.error) { alerteExport("La date n'a pas pu être enregistrée : " + r.error.message); return; }
+        for (var k = 0; k < dossiers.length; k++) if (dossiers[k].id === d.id) dossiers[k] = r.data;
+        rendreContrats();
+        if (choisi === d.id) rendreDetail(r.data);
+      });
+      var dureeTxt = c.date_effet ? ((parseInt(c.duree, 10) || 1) + " an" + ((parseInt(c.duree, 10) || 1) > 1 ? "s" : "") + (c.reconduction === false ? "" : ", reconductible") + (c.echeance === "civile" ? " (année civile)" : "")) : "";
+      tbody.appendChild(el("tr", null, [
+        el("td", null, [ouvrir, el("span", { classe: "petit", texte: d.offre_titre || "" })]),
+        el("td", { classe: "num" }, [dateInput]),
+        el("td", { texte: dureeTxt }),
+        el("td", { classe: "num", texte: i.echeance ? dateFr(versIso(i.echeance)) : "" }),
+        el("td", { classe: "num", texte: i.preavis ? dateFr(versIso(i.preavis)) : "" }),
+        el("td", { texte: nbSignes(d) ? (nbSignes(d) > 1 ? nbSignes(d) + " fichiers" : "Oui") : "Non" }),
+        el("td", null, [
+          el("span", { classe: "etat-ct etat-" + i.etat, texte: i.libelle }),
+          i.echeance && d.relance_echeance === versIso(i.echeance) && d.relance_envoyee_le
+            ? el("span", { classe: "relance", texte: "Relance envoyée le " + dateFr(d.relance_envoyee_le) }) : null
+        ])
+      ]));
+    });
+    table.appendChild(thead); table.appendChild(tbody);
+    zone.appendChild(table);
+  }
+
+  /* ---------- Exports CSV ---------- */
+  function alerteExport(msg) {
+    var a = $("info-export");
+    a.textContent = msg; a.hidden = false;
+    setTimeout(function () { a.hidden = true; }, 6000);
+  }
+  function celluleCsv(v) {
+    if (v == null) return '""';
+    v = Array.isArray(v) ? v.join(", ") : String(v);
+    if (/^[=+\-@]/.test(v)) v = "'" + v; // evite les formules dans Excel
+    return '"' + v.replace(/"/g, '""') + '"';
+  }
+  function telechargerCsv(nom, entetes, lignes) {
+    if (window.FFPMI_DEMO) { alerteExport("Aperçu : le fichier « " + nom + " » contiendrait " + lignes.length + " lignes. Le téléchargement est désactivé ici."); return; }
+    var contenu = [entetes.map(celluleCsv).join(";")].concat(lignes.map(function (l) { return l.map(celluleCsv).join(";"); })).join("\r\n");
+    var blob = new Blob(["﻿" + contenu], { type: "text/csv;charset=utf-8" });
+    var a = el("a", { href: URL.createObjectURL(blob), download: nom });
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  var jourIso = function () { return new Date().toISOString().slice(0, 10); };
+
+  $("btn-export").addEventListener("click", function () {
+    var cols = [
+      ["created_at", "Date de dépôt"], ["statut", "Statut"], ["nom_commercial", "Nom commercial"], ["raison_sociale", "Raison sociale"], ["forme_juridique", "Forme juridique"],
+      ["siret", "SIRET"], ["adresse", "Adresse"], ["code_postal", "Code postal"], ["ville", "Ville"], ["pays", "Pays"],
+      ["site_web", "Site"], ["secteur", "Secteur"], ["annee_creation", "Création"], ["effectif", "Effectif"],
+      ["contact_prenom", "Prénom"], ["contact_nom", "Nom"], ["contact_fonction", "Fonction"], ["contact_email", "Email"], ["contact_telephone", "Téléphone"],
+      ["offre_titre", "Offre"], ["offre_categorie", "Catégorie"], ["avantage_type", "Type d'avantage"], ["avantage_valeur", "Avantage"],
+      ["offre_description", "Description"], ["offre_conditions", "Conditions"], ["offre_debut", "Début"], ["offre_fin", "Fin"],
+      ["offre_modalites", "Modalités"], ["offre_exclusive", "Exclusive"], ["contreparties", "Visibilité souhaitée"],
+      ["presentation", "Présentation"], ["lien_metiers_image", "Lien métiers de l'image"], ["references_clients", "Références"],
+      ["slogan", "Accroche"], ["couleur_principale", "Couleur 1"], ["couleur_secondaire", "Couleur 2"],
+      ["reseau_instagram", "Instagram"], ["reseau_facebook", "Facebook"], ["reseau_linkedin", "LinkedIn"], ["reseau_youtube", "YouTube"],
+      ["notes_internes", "Notes internes"]
+    ];
+    function val(d, k) {
+      var v = d[k];
+      if (v == null) return "";
+      if (k === "statut") return libStatut(v);
+      if (k === "created_at") return d.source === "import" ? "Contrat existant" : dateFr(v, true);
+      if (k === "offre_exclusive") return v ? "Oui" : "Non";
+      return v;
+    }
+    telechargerCsv("dossiers-partenaires-ffpmi-" + jourIso() + ".csv", cols.map(function (c) { return c[1]; }),
+      visibles().map(function (d) { return cols.map(function (c) { return val(d, c[0]); }); }));
+  });
+
+  // Tous les contacts des partenaires en cours (statut Accepte), contact principal et autres contacts
+  $("btn-export-contacts").addEventListener("click", function () {
+    var entetes = ["Partenaire", "Raison sociale", "Rôle", "Prénom", "Nom", "Fonction", "Email", "Téléphone", "Ville", "Pays", "Site internet", "Offre", "Code ou modalités", "Date d'effet", "Prochaine échéance"];
+    var lignes = [];
+    dossiers.filter(function (d) { return d.statut === "accepte"; })
+      .sort(function (a, b) { return nomAffiche(a).localeCompare(nomAffiche(b), "fr"); })
+      .forEach(function (d) {
+        var i = infoContrat(d), c = d.contrat || {};
+        var commun = function (role, p) {
+          return [nomAffiche(d), d.raison_sociale, role, p.prenom || "", p.nom || "", p.fonction || "", p.email || "", p.telephone || "",
+            d.ville || "", d.pays || "", d.site_web || "", d.offre_titre || "", d.offre_modalites || "",
+            c.date_effet ? dateFr(c.date_effet) : "", i.echeance ? dateFr(versIso(i.echeance)) : ""];
+        };
+        lignes.push(commun("Contact principal", { prenom: d.contact_prenom, nom: d.contact_nom, fonction: d.contact_fonction, email: d.contact_email, telephone: d.contact_telephone }));
+        (d.autres_contacts || []).forEach(function (p) { lignes.push(commun("Autre contact", p)); });
+      });
+    if (!lignes.length) { alerteExport("Aucun partenaire au statut « Accepté » pour l'instant."); return; }
+    telechargerCsv("contacts-partenaires-ffpmi-" + jourIso() + ".csv", entetes, lignes);
+  });
+
+  /* ---------- Demarrage ---------- */
+  sb.auth.getSession().then(function (r) {
+    if (enRecuperation || /type=recovery/.test(location.hash)) { vues("nouveau-mdp"); return; }
+    entrer(r.data.session);
+  });
+})();
+</script>
+</body>
+</html>

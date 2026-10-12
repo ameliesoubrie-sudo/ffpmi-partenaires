@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Devenir partenaire - FFPMI</title>
+<meta name="description" content="Déposez votre proposition de partenariat auprès de la Fédération Française de la Photographie et des Métiers de l'Image.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bande"></div>
+<header class="site">
+  <div class="inner">
+    <a class="marque" href="https://www.ffpmi.eu" aria-label="FFPMI">
+      <img src="logo-ffpmi.png" alt="FFPMI" onerror="this.remove();document.getElementById('sigle').hidden=false">
+      <span id="sigle" hidden>
+        <span class="sigle">FFPMI</span><br>
+        <span class="nom">Fédération Française de la Photographie et des Métiers de l'Image</span>
+      </span>
+    </a>
+    <a class="lien-discret" id="lien-contact" href="mailto:partenaires@ffpmi.eu">Une question ?</a>
+  </div>
+</header>
+
+<main>
+  <div id="intro">
+    <h1>Devenir partenaire de la FFPMI</h1>
+    <p class="chapeau">Proposez une offre dédiée aux photographes et professionnels de l'image adhérents de la Fédération. Le dossier se remplit en une quinzaine de minutes : préparez votre logo, et si vous le souhaitez, votre plaquette de présentation en PDF.</p>
+  </div>
+
+  <div class="carte" id="formulaire-carte">
+    <ol class="etapes" id="etapes" aria-label="Étapes du dossier">
+      <li><span>Société</span></li>
+      <li><span>Présentation</span></li>
+      <li><span>Offre adhérents</span></li>
+      <li><span>Identité</span></li>
+      <li><span>Envoi</span></li>
+    </ol>
+
+    <div class="alerte alerte-erreur" id="erreur-globale" role="alert" hidden></div>
+
+    <form id="form" novalidate>
+      <!-- Champ piege anti-robots -->
+      <div class="piege" aria-hidden="true">
+        <label>Ne pas remplir <input type="text" name="site_internet_bis" tabindex="-1" autocomplete="off"></label>
+      </div>
+
+      <!-- ETAPE 1 -->
+      <fieldset class="etape" data-etape="0" style="border:0;padding:0;margin:0">
+        <h2>Votre société</h2>
+        <p class="sous">Les informations légales et la personne qui suivra le partenariat.</p>
+        <div class="grille">
+          <div class="champ plein">
+            <label for="raison_sociale">Raison sociale<span class="requis">*</span></label>
+            <input type="text" id="raison_sociale" name="raison_sociale" required maxlength="200" autocomplete="organization">
+            <div class="msg-erreur">Indiquez la raison sociale.</div>
+          </div>
+          <div class="champ plein">
+            <label for="nom_commercial">Nom commercial ou marque</label>
+            <input type="text" id="nom_commercial" name="nom_commercial" maxlength="200" placeholder="Si différent de la raison sociale">
+          </div>
+          <div class="champ">
+            <label for="forme_juridique">Forme juridique</label>
+            <select id="forme_juridique" name="forme_juridique">
+              <option value="">Choisir</option>
+              <option>SAS</option><option>SASU</option><option>SARL</option><option>EURL</option>
+              <option>SA</option><option>Entreprise individuelle</option><option>Association</option><option>Autre</option>
+            </select>
+          </div>
+          <div class="champ">
+            <label for="siret">SIRET<span class="requis">*</span></label>
+            <input type="text" id="siret" name="siret" required inputmode="numeric" maxlength="17" placeholder="14 chiffres">
+            <div class="msg-erreur">Le SIRET doit comporter 14 chiffres valides.</div>
+          </div>
+          <div class="champ plein">
+            <label for="adresse">Adresse<span class="requis">*</span></label>
+            <input type="text" id="adresse" name="adresse" required autocomplete="street-address">
+            <div class="msg-erreur">Indiquez l'adresse.</div>
+          </div>
+          <div class="champ">
+            <label for="code_postal">Code postal<span class="requis">*</span></label>
+            <input type="text" id="code_postal" name="code_postal" required autocomplete="postal-code" maxlength="10">
+            <div class="msg-erreur">Indiquez le code postal.</div>
+          </div>
+          <div class="champ">
+            <label for="ville">Ville<span class="requis">*</span></label>
+            <input type="text" id="ville" name="ville" required autocomplete="address-level2">
+            <div class="msg-erreur">Indiquez la ville.</div>
+          </div>
+          <div class="champ">
+            <label for="pays">Pays<span class="requis">*</span></label>
+            <input type="text" id="pays" name="pays" required value="France" autocomplete="country-name">
+            <div class="msg-erreur">Indiquez le pays.</div>
+          </div>
+          <div class="champ">
+            <label for="site_web">Site internet</label>
+            <input type="url" id="site_web" name="site_web" placeholder="https://" autocomplete="url">
+            <div class="msg-erreur">Adresse web invalide (elle doit commencer par https://).</div>
+          </div>
+          <div class="champ">
+            <label for="secteur">Secteur d'activité<span class="requis">*</span></label>
+            <select id="secteur" name="secteur" required>
+              <option value="">Choisir</option>
+              <option>Matériel photo et vidéo</option>
+              <option>Éclairage et studio</option>
+              <option>Logiciels et applications</option>
+              <option>Laboratoire, impression et encadrement</option>
+              <option>Albums et produits photo</option>
+              <option>Assurance, banque et finance</option>
+              <option>Comptabilité, juridique et conseil</option>
+              <option>Formation</option>
+              <option>Communication et marketing</option>
+              <option>Hébergement web et stockage</option>
+              <option>Autre</option>
+            </select>
+            <div class="msg-erreur">Choisissez un secteur.</div>
+          </div>
+          <div class="champ">
+            <label for="annee_creation">Année de création</label>
+            <input type="number" id="annee_creation" name="annee_creation" min="1800" max="2100" inputmode="numeric">
+            <div class="msg-erreur">Année invalide.</div>
+          </div>
+          <div class="champ">
+            <label for="effectif">Effectif</label>
+            <select id="effectif" name="effectif">
+              <option value="">Choisir</option>
+              <option>1 personne</option><option>2 à 9</option><option>10 à 49</option>
+              <option>50 à 249</option><option>250 et plus</option>
+            </select>
+          </div>
+        </div>
+
+        <h3>Contact référent du partenariat</h3>
+        <div class="grille">
+          <div class="champ">
+            <label for="contact_prenom">Prénom<span class="requis">*</span></label>
+            <input type="text" id="contact_prenom" name="contact_prenom" required autocomplete="given-name">
+            <div class="msg-erreur">Indiquez le prénom.</div>
+          </div>
+          <div class="champ">
+            <label for="contact_nom">Nom<span class="requis">*</span></label>
+            <input type="text" id="contact_nom" name="contact_nom" required autocomplete="family-name">
+            <div class="msg-erreur">Indiquez le nom.</div>
+          </div>
+          <div class="champ">
+            <label for="contact_fonction">Fonction</label>
+            <input type="text" id="contact_fonction" name="contact_fonction" autocomplete="organization-title">
+          </div>
+          <div class="champ">
+            <label for="contact_telephone">Téléphone<span class="requis">*</span></label>
+            <input type="tel" id="contact_telephone" name="contact_telephone" required autocomplete="tel">
+            <div class="msg-erreur">Indiquez un numéro de téléphone.</div>
+          </div>
+          <div class="champ plein">
+            <label for="contact_email">Email<span class="requis">*</span></label>
+            <input type="email" id="contact_email" name="contact_email" required autocomplete="email">
+            <div class="msg-erreur">Indiquez une adresse email valide.</div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- ETAPE 2 -->
+      <fieldset class="etape" data-etape="1" hidden style="border:0;padding:0;margin:0">
+        <h2>Présentation de votre société</h2>
+        <p class="sous">Ce texte aide la commission partenariats à vous connaître, et pourra servir de base à votre fiche partenaire.</p>
+        <div class="grille">
+          <div class="champ plein">
+            <label for="presentation">Présentez votre société et votre activité<span class="requis">*</span></label>
+            <textarea id="presentation" name="presentation" required maxlength="3000" rows="6"></textarea>
+            <div class="compteur" data-pour="presentation"></div>
+            <div class="msg-erreur">Présentez votre société.</div>
+          </div>
+          <div class="champ plein">
+            <label for="lien_metiers_image">Quel lien avec les métiers de l'image ?<span class="requis">*</span></label>
+            <textarea id="lien_metiers_image" name="lien_metiers_image" required maxlength="2000" rows="4"></textarea>
+            <p class="aide">Ce que vous apportez aux photographes et professionnels de l'image, votre expérience avec ce public.</p>
+            <div class="compteur" data-pour="lien_metiers_image"></div>
+            <div class="msg-erreur">Décrivez votre lien avec les métiers de l'image.</div>
+          </div>
+          <div class="champ plein">
+            <label for="references_clients">Références, partenariats existants, chiffres clés</label>
+            <textarea id="references_clients" name="references_clients" maxlength="2000" rows="4"></textarea>
+            <p class="aide">Facultatif : autres fédérations ou réseaux partenaires, nombre de clients photographes, distinctions...</p>
+            <div class="compteur" data-pour="references_clients"></div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- ETAPE 3 -->
+      <fieldset class="etape" data-etape="2" hidden style="border:0;padding:0;margin:0">
+        <h2>Votre offre pour les adhérents</h2>
+        <p class="sous">Décrivez l'avantage réservé aux adhérents de la FFPMI.</p>
+        <div class="grille">
+          <div class="champ plein">
+            <label for="offre_titre">Titre de l'offre<span class="requis">*</span></label>
+            <input type="text" id="offre_titre" name="offre_titre" required maxlength="150" placeholder="Ex. : -15 % sur toute la gamme studio">
+            <div class="msg-erreur">Donnez un titre à votre offre.</div>
+          </div>
+          <div class="champ">
+            <label for="offre_categorie">Catégorie<span class="requis">*</span></label>
+            <select id="offre_categorie" name="offre_categorie" required>
+              <option value="">Choisir</option>
+              <option>Matériel et accessoires</option>
+              <option>Logiciels et abonnements</option>
+              <option>Impression et produits photo</option>
+              <option>Assurance et services financiers</option>
+              <option>Services aux entreprises</option>
+              <option>Formation</option>
+              <option>Autre</option>
+            </select>
+            <div class="msg-erreur">Choisissez une catégorie.</div>
+          </div>
+          <div class="champ">
+            <label for="avantage_type">Type d'avantage<span class="requis">*</span></label>
+            <select id="avantage_type" name="avantage_type" required>
+              <option value="">Choisir</option>
+              <option>Remise en pourcentage</option>
+              <option>Remise en euros</option>
+              <option>Prix préférentiel</option>
+              <option>Offre ou service gratuit</option>
+              <option>Période d'essai prolongée</option>
+              <option>Autre</option>
+            </select>
+            <div class="msg-erreur">Choisissez le type d'avantage.</div>
+          </div>
+          <div class="champ plein">
+            <label for="avantage_valeur">Montant ou nature de l'avantage<span class="requis">*</span></label>
+            <input type="text" id="avantage_valeur" name="avantage_valeur" required maxlength="200" placeholder="Ex. : 15 %, 3 mois offerts, frais de port gratuits...">
+            <div class="msg-erreur">Précisez l'avantage.</div>
+          </div>
+          <div class="champ plein">
+            <label for="offre_description">Description de l'offre<span class="requis">*</span></label>
+            <textarea id="offre_description" name="offre_description" required maxlength="3000" rows="5"></textarea>
+            <div class="compteur" data-pour="offre_description"></div>
+            <div class="msg-erreur">Décrivez votre offre.</div>
+          </div>
+          <div class="champ plein">
+            <label for="offre_conditions">Conditions et exclusions</label>
+            <textarea id="offre_conditions" name="offre_conditions" maxlength="2000" rows="3" placeholder="Minimum de commande, produits exclus, non cumulable..."></textarea>
+          </div>
+          <div class="champ">
+            <label for="offre_debut">Début de validité</label>
+            <input type="date" id="offre_debut" name="offre_debut">
+          </div>
+          <div class="champ">
+            <label for="offre_fin">Fin de validité</label>
+            <input type="date" id="offre_fin" name="offre_fin">
+            <p class="aide">Laissez vide si l'offre est permanente.</p>
+            <div class="msg-erreur">La fin doit être postérieure au début.</div>
+          </div>
+          <div class="champ plein">
+            <label for="offre_modalites">Comment les adhérents en bénéficient-ils ?<span class="requis">*</span></label>
+            <textarea id="offre_modalites" name="offre_modalites" required maxlength="1500" rows="3" placeholder="Code promo, lien dédié, contact commercial, justificatif d'adhésion à présenter..."></textarea>
+            <div class="msg-erreur">Indiquez les modalités d'accès.</div>
+          </div>
+          <div class="champ plein">
+            <span class="label">Exclusivité</span>
+            <label class="choix" style="max-width:520px">
+              <input type="checkbox" name="offre_exclusive" id="offre_exclusive">
+              <span>Cette offre est exclusive aux adhérents FFPMI (non proposée à d'autres réseaux)</span>
+            </label>
+          </div>
+          <div class="champ plein">
+            <span class="label">Visibilité souhaitée en contrepartie</span>
+            <div class="choix-liste" id="contreparties">
+              <label class="choix"><input type="checkbox" name="contreparties" value="Page partenaires du site FFPMI"><span>Page partenaires du site FFPMI</span></label>
+              <label class="choix"><input type="checkbox" name="contreparties" value="Newsletter adhérents"><span>Newsletter adhérents</span></label>
+              <label class="choix"><input type="checkbox" name="contreparties" value="Réseaux sociaux FFPMI"><span>Réseaux sociaux FFPMI</span></label>
+              <label class="choix"><input type="checkbox" name="contreparties" value="Présence au Congrès FFPMI"><span>Présence au Congrès FFPMI</span></label>
+              <label class="choix"><input type="checkbox" name="contreparties" value="Événements régionaux"><span>Événements régionaux</span></label>
+              <label class="choix"><input type="checkbox" name="contreparties" value="Webinaire ou intervention"><span>Webinaire ou intervention</span></label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- ETAPE 4 -->
+      <fieldset class="etape" data-etape="3" hidden style="border:0;padding:0;margin:0">
+        <h2>Identité de votre marque</h2>
+        <p class="sous">Ces éléments serviront à présenter votre offre aux adhérents.</p>
+        <div class="grille">
+          <div class="champ">
+            <span class="label">Logo<span class="requis">*</span></span>
+            <label class="depot" id="depot-logo">
+              <input type="file" id="logo" accept="image/png,image/jpeg,image/svg+xml,image/webp">
+              <div class="titre">Déposer le logo</div>
+              <div class="format">PNG, JPG, SVG ou WEBP, 5 Mo maximum. Fond transparent de préférence.</div>
+              <div class="apercu"><img alt="" id="apercu-logo"><span class="nom-fichier"></span></div>
+            </label>
+            <div class="msg-erreur">Ajoutez votre logo (PNG, JPG, SVG ou WEBP, 5 Mo maximum).</div>
+          </div>
+          <div class="champ">
+            <span class="label">Plaquette ou présentation</span>
+            <label class="depot" id="depot-plaquette">
+              <input type="file" id="plaquette" accept="application/pdf">
+              <div class="titre">Déposer un PDF</div>
+              <div class="format">Facultatif. PDF, 10 Mo maximum.</div>
+              <div class="apercu"><span class="nom-fichier"></span></div>
+            </label>
+            <div class="msg-erreur">Le fichier doit être un PDF de 10 Mo maximum.</div>
+          </div>
+          <div class="champ plein">
+            <label for="slogan">Accroche ou slogan</label>
+            <input type="text" id="slogan" name="slogan" maxlength="200">
+          </div>
+          <div class="champ">
+            <label for="couleur_principale_txt">Couleur principale</label>
+            <div class="couleurs">
+              <input type="color" id="couleur_principale" value="#717E85" aria-label="Choisir la couleur principale">
+              <input type="text" id="couleur_principale_txt" name="couleur_principale" placeholder="#000000" maxlength="7">
+            </div>
+            <div class="msg-erreur">Format attendu : #RRGGBB.</div>
+          </div>
+          <div class="champ">
+            <label for="couleur_secondaire_txt">Couleur secondaire</label>
+            <div class="couleurs">
+              <input type="color" id="couleur_secondaire" value="#E25623" aria-label="Choisir la couleur secondaire">
+              <input type="text" id="couleur_secondaire_txt" name="couleur_secondaire" placeholder="#000000" maxlength="7">
+            </div>
+            <div class="msg-erreur">Format attendu : #RRGGBB.</div>
+          </div>
+        </div>
+        <h3>Réseaux sociaux</h3>
+        <div class="grille">
+          <div class="champ"><label for="reseau_instagram">Instagram</label><input type="url" id="reseau_instagram" name="reseau_instagram" placeholder="https://instagram.com/..."><div class="msg-erreur">Lien invalide.</div></div>
+          <div class="champ"><label for="reseau_facebook">Facebook</label><input type="url" id="reseau_facebook" name="reseau_facebook" placeholder="https://facebook.com/..."><div class="msg-erreur">Lien invalide.</div></div>
+          <div class="champ"><label for="reseau_linkedin">LinkedIn</label><input type="url" id="reseau_linkedin" name="reseau_linkedin" placeholder="https://linkedin.com/company/..."><div class="msg-erreur">Lien invalide.</div></div>
+          <div class="champ"><label for="reseau_youtube">YouTube</label><input type="url" id="reseau_youtube" name="reseau_youtube" placeholder="https://youtube.com/..."><div class="msg-erreur">Lien invalide.</div></div>
+        </div>
+      </fieldset>
+
+      <!-- ETAPE 5 -->
+      <fieldset class="etape" data-etape="4" hidden style="border:0;padding:0;margin:0">
+        <h2>Vérification et envoi</h2>
+        <p class="sous">Relisez votre dossier avant de l'envoyer. Vous pouvez revenir sur chaque partie.</p>
+        <div class="recap" id="recap"></div>
+
+        <div class="mention-rgpd">
+          Les informations de ce formulaire sont traitées par la FFPMI (Fédération Française de la Photographie et des Métiers de l'Image, 6 impasse Marthe Condat, 31200 Toulouse), responsable du traitement, pour étudier votre proposition de partenariat et, si elle est retenue, la présenter aux adhérents. Elles sont réservées à la commission partenariats de la FFPMI et conservées pendant la durée du partenariat, ou un an après une décision de refus. Vous pouvez exercer vos droits d'accès, de rectification et d'effacement en écrivant à <a href="mailto:partenaires@ffpmi.eu">partenaires@ffpmi.eu</a>.
+        </div>
+        <div class="champ">
+          <label class="choix"><input type="checkbox" id="consentement_rgpd"><span>J'accepte que ces informations soient utilisées pour l'étude de ma proposition de partenariat.<span class="requis">*</span></span></label>
+          <div class="msg-erreur">Votre accord est nécessaire pour envoyer le dossier.</div>
+        </div>
+        <div class="champ" style="margin-top:8px">
+          <label class="choix"><input type="checkbox" id="certification_exacte"><span>Je certifie être habilité(e) à représenter cette société et que les informations fournies sont exactes.<span class="requis">*</span></span></label>
+          <div class="msg-erreur">Cette confirmation est nécessaire.</div>
+        </div>
+      </fieldset>
+
+      <div class="nav-form">
+        <button type="button" class="btn btn-secondaire" id="btn-precedent" hidden>Précédent</button>
+        <button type="button" class="btn btn-primaire droite" id="btn-suivant">Continuer</button>
+        <button type="submit" class="btn btn-primaire droite" id="btn-envoyer" hidden>Envoyer mon dossier</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="carte envoi-ok" id="confirmation" hidden>
+    <div class="rond" aria-hidden="true">✓</div>
+    <h2>Merci, votre dossier a bien été envoyé</h2>
+    <p class="chapeau" style="margin:12px auto 0">La commission partenariats de la FFPMI va l'étudier et reviendra vers vous à l'adresse <strong id="conf-email"></strong>.</p>
+  </div>
+</main>
+
+<footer class="site">
+  FFPMI - Fédération Française de la Photographie et des Métiers de l'Image
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+(function () {
+  "use strict";
+  var CFG = window.FFPMI_CONFIG || {};
+  var form = document.getElementById("form");
+  var etapes = Array.prototype.slice.call(document.querySelectorAll(".etape"));
+  var puces = Array.prototype.slice.call(document.querySelectorAll("#etapes li"));
+  var btnPrec = document.getElementById("btn-precedent");
+  var btnSuiv = document.getElementById("btn-suivant");
+  var btnEnv = document.getElementById("btn-envoyer");
+  var erreurGlobale = document.getElementById("erreur-globale");
+  var courante = 0;
+  var fichiers = { logo: null, plaquette: null };
+  var CLE_BROUILLON = "ffpmi-partenaire-brouillon";
+
+  if (CFG.CONTACT_EMAIL) {
+    var lc = document.getElementById("lien-contact");
+    lc.href = "mailto:" + CFG.CONTACT_EMAIL;
+  }
+
+  /* ---------- Outils ---------- */
+  function $(id) { return document.getElementById(id); }
+  function val(id) { var el = $(id); return el ? el.value.trim() : ""; }
+  function vide(v) { return v === "" ? null : v; }
+
+  function siretValide(s) {
+    s = s.replace(/\s+/g, "");
+    if (!/^\d{14}$/.test(s)) return false;
+    if (s.indexOf("356000000") === 0) return true; // La Poste
+    var somme = 0;
+    for (var i = 0; i < 14; i++) {
+      var n = parseInt(s.charAt(i), 10);
+      if (i % 2 === 0) { n *= 2; if (n > 9) n -= 9; }
+      somme += n;
+    }
+    return somme % 10 === 0;
+  }
+  function urlValide(v) {
+    if (!v) return true;
+    try { var u = new URL(v); return u.protocol === "https:" || u.protocol === "http:"; }
+    catch (e) { return false; }
+  }
+  function normaliserUrl(el) {
+    var v = el.value.trim();
+    if (v && !/^https?:\/\//i.test(v)) el.value = "https://" + v;
+  }
+  function couleurValide(v) { return !v || /^#[0-9a-fA-F]{6}$/.test(v); }
+
+  function marquer(el, ok) {
+    var c = el.closest(".champ");
+    if (c) c.classList.toggle("invalide", !ok);
+    return ok;
+  }
+
+  /* ---------- Validation par etape ---------- */
+  function validerEtape(i) {
+    var ok = true;
+    var etape = etapes[i];
+    etape.querySelectorAll("input[type=url]").forEach(normaliserUrl);
+    etape.querySelectorAll("[required]").forEach(function (el) {
+      var bon = el.value.trim() !== "";
+      if (bon && el.type === "email") bon = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(el.value.trim());
+      if (!marquer(el, bon)) ok = false;
+    });
+    etape.querySelectorAll("input[type=url]").forEach(function (el) {
+      if (!marquer(el, urlValide(el.value.trim()))) ok = false;
+    });
+    if (i === 0) {
+      var s = $("siret");
+      if (s.value.trim() !== "" && !marquer(s, siretValide(s.value))) ok = false;
+      var a = $("annee_creation");
+      if (a.value !== "") {
+        var n = parseInt(a.value, 10);
+        if (!marquer(a, n >= 1800 && n <= new Date().getFullYear())) ok = false;
+      } else marquer(a, true);
+    }
+    if (i === 2) {
+      var d = val("offre_debut"), f = val("offre_fin");
+      if (!marquer($("offre_fin"), !(d && f && f < d))) ok = false;
+    }
+    if (i === 3) {
+      if (!marquer($("logo"), !!fichiers.logo)) ok = false;
+      ["couleur_principale_txt", "couleur_secondaire_txt"].forEach(function (id) {
+        if (!marquer($(id), couleurValide(val(id)))) ok = false;
+      });
+    }
+    if (i === 4) {
+      if (!marquer($("consentement_rgpd"), $("consentement_rgpd").checked)) ok = false;
+      if (!marquer($("certification_exacte"), $("certification_exacte").checked)) ok = false;
+    }
+    if (!ok) {
+      var premier = etape.querySelector(".champ.invalide");
+      if (premier) {
+        premier.scrollIntoView({ behavior: "smooth", block: "center" });
+        var champ = premier.querySelector("input, select, textarea");
+        if (champ) setTimeout(function () { champ.focus({ preventScroll: true }); }, 300);
+      }
+    }
+    return ok;
+  }
+
+  // Effacer l'erreur des que l'on corrige
+  form.addEventListener("input", function (e) {
+    var c = e.target.closest(".champ");
+    if (c && c.classList.contains("invalide")) c.classList.remove("invalide");
+    sauverBrouillon();
+  });
+  form.addEventListener("change", function (e) {
+    var c = e.target.closest(".champ");
+    if (c && c.classList.contains("invalide") && e.target.type === "checkbox") c.classList.remove("invalide");
+    sauverBrouillon();
+  });
+
+  /* ---------- Navigation ---------- */
+  function afficher(i, sansDefilement) {
+    courante = i;
+    etapes.forEach(function (e, k) { e.hidden = k !== i; });
+    puces.forEach(function (p, k) {
+      p.classList.toggle("active", k === i);
+      p.classList.toggle("faite", k < i);
+      if (k === i) p.setAttribute("aria-current", "step"); else p.removeAttribute("aria-current");
+    });
+    btnPrec.hidden = i === 0;
+    btnSuiv.hidden = i === etapes.length - 1;
+    btnEnv.hidden = i !== etapes.length - 1;
+    if (i === etapes.length - 1) construireRecap();
+    erreurGlobale.hidden = true;
+    if (!sansDefilement) $("formulaire-carte").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  btnSuiv.addEventListener("click", function () { if (validerEtape(courante)) afficher(courante + 1); });
+  btnPrec.addEventListener("click", function () { afficher(courante - 1); });
+
+  /* ---------- Compteurs de caracteres ---------- */
+  document.querySelectorAll(".compteur").forEach(function (c) {
+    var t = $(c.getAttribute("data-pour"));
+    function maj() { c.textContent = t.value.length + " / " + t.maxLength; }
+    t.addEventListener("input", maj); maj();
+  });
+
+  /* ---------- SIRET : espaces automatiques ---------- */
+  $("siret").addEventListener("blur", function () {
+    var s = this.value.replace(/\D/g, "");
+    if (s.length === 14) this.value = s.replace(/^(\d{3})(\d{3})(\d{3})(\d{5})$/, "$1 $2 $3 $4");
+  });
+
+  /* ---------- Couleurs ---------- */
+  ["couleur_principale", "couleur_secondaire"].forEach(function (id) {
+    var pick = $(id), txt = $(id + "_txt");
+    pick.addEventListener("input", function () { txt.value = pick.value.toUpperCase(); sauverBrouillon(); });
+    txt.addEventListener("input", function () { if (couleurValide(txt.value) && txt.value) pick.value = txt.value; });
+  });
+
+  /* ---------- Depots de fichiers ---------- */
+  function brancherDepot(cle, types, maxMo) {
+    var zone = $("depot-" + cle), input = $(cle);
+    function prendre(f) {
+      var ok = f && types.indexOf(f.type) !== -1 && f.size <= maxMo * 1024 * 1024;
+      if (!ok) { fichiers[cle] = null; zone.classList.remove("rempli"); input.value = ""; marquer(input, false); return; }
+      fichiers[cle] = f;
+      marquer(input, true);
+      zone.classList.add("rempli");
+      zone.querySelector(".nom-fichier").textContent = f.name + " (" + (f.size / 1024 / 1024).toFixed(1) + " Mo)";
+      var img = zone.querySelector("img");
+      if (img) {
+        var r = new FileReader();
+        r.onload = function () { img.src = r.result; };
+        r.readAsDataURL(f);
+      }
+    }
+    input.addEventListener("change", function () { prendre(input.files[0]); });
+    ["dragenter", "dragover"].forEach(function (ev) {
+      zone.addEventListener(ev, function (e) { e.preventDefault(); zone.classList.add("survol"); });
+    });
+    ["dragleave", "drop"].forEach(function (ev) {
+      zone.addEventListener(ev, function (e) { e.preventDefault(); zone.classList.remove("survol"); });
+    });
+    zone.addEventListener("drop", function (e) { if (e.dataTransfer.files[0]) prendre(e.dataTransfer.files[0]); });
+  }
+  brancherDepot("logo", ["image/png", "image/jpeg", "image/svg+xml", "image/webp"], 5);
+  brancherDepot("plaquette", ["application/pdf"], 10);
+
+  /* ---------- Brouillon (dans ce navigateur uniquement) ---------- */
+  var champsTexte = Array.prototype.slice.call(form.querySelectorAll("input[name]:not([type=checkbox]):not([type=file]), select[name], textarea[name]"))
+    .filter(function (el) { return el.name !== "site_internet_bis"; });
+
+  function sauverBrouillon() {
+    var d = {};
+    champsTexte.forEach(function (el) { d[el.name] = el.value; });
+    d.offre_exclusive = $("offre_exclusive").checked;
+    d.contreparties = lireContreparties();
+    try { localStorage.setItem(CLE_BROUILLON, JSON.stringify(d)); } catch (e) {}
+  }
+  function chargerBrouillon() {
+    var d = null;
+    try { d = JSON.parse(localStorage.getItem(CLE_BROUILLON) || "null"); } catch (e) {}
+    if (!d) return;
+    champsTexte.forEach(function (el) { if (d[el.name] != null) el.value = d[el.name]; });
+    $("offre_exclusive").checked = !!d.offre_exclusive;
+    (d.contreparties || []).forEach(function (v) {
+      var cb = form.querySelector('input[name=contreparties][value="' + v.replace(/"/g, '\\"') + '"]');
+      if (cb) cb.checked = true;
+    });
+    ["couleur_principale", "couleur_secondaire"].forEach(function (id) {
+      if (couleurValide(val(id + "_txt")) && val(id + "_txt")) $(id).value = val(id + "_txt");
+    });
+    document.querySelectorAll(".compteur").forEach(function (c) {
+      var t = $(c.getAttribute("data-pour")); c.textContent = t.value.length + " / " + t.maxLength;
+    });
+  }
+  function effacerBrouillon() { try { localStorage.removeItem(CLE_BROUILLON); } catch (e) {} }
+
+  function lireContreparties() {
+    return Array.prototype.slice.call(form.querySelectorAll("input[name=contreparties]:checked")).map(function (c) { return c.value; });
+  }
+
+  /* ---------- Recapitulatif ---------- */
+  function construireRecap() {
+    var dateFr = function (d) { return d ? d.split("-").reverse().join("/") : ""; };
+    var blocs = [
+      { titre: "Société", etape: 0, lignes: [
+        ["Raison sociale", val("raison_sociale")], ["Nom commercial", val("nom_commercial")], ["Forme juridique", val("forme_juridique")],
+        ["SIRET", val("siret")], ["Adresse", [val("adresse"), val("code_postal") + " " + val("ville"), val("pays")].join("\n")],
+        ["Site internet", val("site_web")], ["Secteur", val("secteur")],
+        ["Création", val("annee_creation")], ["Effectif", val("effectif")],
+        ["Contact", [val("contact_prenom") + " " + val("contact_nom"), val("contact_fonction"), val("contact_email"), val("contact_telephone")].filter(Boolean).join("\n")]
+      ]},
+      { titre: "Présentation", etape: 1, lignes: [
+        ["Présentation", val("presentation")], ["Lien métiers de l'image", val("lien_metiers_image")],
+        ["Références", val("references_clients")]
+      ]},
+      { titre: "Offre adhérents", etape: 2, lignes: [
+        ["Titre", val("offre_titre")], ["Catégorie", val("offre_categorie")],
+        ["Avantage", val("avantage_type") + " : " + val("avantage_valeur")],
+        ["Description", val("offre_description")], ["Conditions", val("offre_conditions")],
+        ["Validité", (val("offre_debut") || val("offre_fin")) ? ("du " + (dateFr(val("offre_debut")) || "...") + " au " + (dateFr(val("offre_fin")) || "...")) : "Permanente"],
+        ["Modalités", val("offre_modalites")],
+        ["Exclusive FFPMI", $("offre_exclusive").checked ? "Oui" : "Non"],
+        ["Visibilité souhaitée", lireContreparties().join(", ")]
+      ]},
+      { titre: "Identité", etape: 3, lignes: [
+        ["Logo", fichiers.logo ? fichiers.logo.name : ""], ["Plaquette", fichiers.plaquette ? fichiers.plaquette.name : ""],
+        ["Accroche", val("slogan")],
+        ["Couleurs", [val("couleur_principale_txt"), val("couleur_secondaire_txt")].filter(Boolean).join(", ")],
+        ["Réseaux", [val("reseau_instagram"), val("reseau_facebook"), val("reseau_linkedin"), val("reseau_youtube")].filter(Boolean).join("\n")]
+      ]}
+    ];
+    var r = $("recap");
+    r.textContent = "";
+    blocs.forEach(function (b) {
+      var s = document.createElement("section");
+      var h = document.createElement("h3");
+      h.textContent = b.titre;
+      var mod = document.createElement("button");
+      mod.type = "button"; mod.className = "btn btn-secondaire btn-petit"; mod.textContent = "Modifier";
+      mod.addEventListener("click", function () { afficher(b.etape); });
+      h.appendChild(mod);
+      s.appendChild(h);
+      var dl = document.createElement("dl");
+      b.lignes.forEach(function (l) {
+        if (!l[1] || !String(l[1]).trim()) return;
+        var dt = document.createElement("dt"); dt.textContent = l[0];
+        var dd = document.createElement("dd"); dd.textContent = l[1];
+        dl.appendChild(dt); dl.appendChild(dd);
+      });
+      s.appendChild(dl);
+      r.appendChild(s);
+    });
+  }
+
+  /* ---------- Envoi ---------- */
+  function extension(f) {
+    var map = { "image/png": "png", "image/jpeg": "jpg", "image/svg+xml": "svg", "image/webp": "webp", "application/pdf": "pdf" };
+    return map[f.type];
+  }
+  function uuid() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+      var r = crypto.getRandomValues(new Uint8Array(1))[0] % 16;
+      return (c === "x" ? r : (r & 3 | 8)).toString(16);
+    });
+  }
+  function montrerErreur(msg) {
+    erreurGlobale.textContent = msg;
+    erreurGlobale.hidden = false;
+    erreurGlobale.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    if (courante !== etapes.length - 1) return;
+    for (var k = 0; k < etapes.length; k++) {
+      if (!validerEtape(k)) { afficher(k); validerEtape(k); return; }
+    }
+    if (form.site_internet_bis.value) return; // robot
+
+    if (!window.supabase || !CFG.SUPABASE_URL || CFG.SUPABASE_URL.indexOf("VOTRE-PROJET") !== -1) {
+      montrerErreur("Le formulaire n'est pas encore relié à la base de données. Merci de réessayer plus tard ou d'écrire à " + (CFG.CONTACT_EMAIL || "la FFPMI") + ".");
+      return;
+    }
+
+    var libelle = btnEnv.innerHTML;
+    btnEnv.disabled = true; btnPrec.disabled = true;
+    btnEnv.innerHTML = '<span class="chargement"></span> Envoi en cours';
+    erreurGlobale.hidden = true;
+
+    var client = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY, { auth: { persistSession: false } });
+    var id = uuid();
+    var bucket = CFG.BUCKET || "partenaires";
+
+    try {
+      var logoPath = id + "/logo." + extension(fichiers.logo);
+      var up1 = await client.storage.from(bucket).upload(logoPath, fichiers.logo, { contentType: fichiers.logo.type, upsert: false });
+      if (up1.error) throw new Error("logo : " + up1.error.message);
+
+      var plaquettePath = null;
+      if (fichiers.plaquette) {
+        plaquettePath = id + "/plaquette.pdf";
+        var up2 = await client.storage.from(bucket).upload(plaquettePath, fichiers.plaquette, { contentType: "application/pdf", upsert: false });
+        if (up2.error) throw new Error("plaquette : " + up2.error.message);
+      }
+
+      var dossier = {
+        id: id,
+        source: "formulaire",
+        raison_sociale: val("raison_sociale"),
+        nom_commercial: vide(val("nom_commercial")),
+        forme_juridique: vide(val("forme_juridique")),
+        siret: val("siret").replace(/\s+/g, ""),
+        adresse: val("adresse"),
+        code_postal: val("code_postal"),
+        ville: val("ville"),
+        pays: val("pays") || "France",
+        site_web: vide(val("site_web")),
+        secteur: val("secteur"),
+        annee_creation: val("annee_creation") ? parseInt(val("annee_creation"), 10) : null,
+        effectif: vide(val("effectif")),
+        contact_prenom: val("contact_prenom"),
+        contact_nom: val("contact_nom"),
+        contact_fonction: vide(val("contact_fonction")),
+        contact_email: val("contact_email").toLowerCase(),
+        contact_telephone: val("contact_telephone"),
+        presentation: val("presentation"),
+        lien_metiers_image: val("lien_metiers_image"),
+        references_clients: vide(val("references_clients")),
+        offre_titre: val("offre_titre"),
+        offre_categorie: val("offre_categorie"),
+        offre_description: val("offre_description"),
+        avantage_type: val("avantage_type"),
+        avantage_valeur: val("avantage_valeur"),
+        offre_conditions: vide(val("offre_conditions")),
+        offre_debut: vide(val("offre_debut")),
+        offre_fin: vide(val("offre_fin")),
+        offre_modalites: val("offre_modalites"),
+        offre_exclusive: $("offre_exclusive").checked,
+        contreparties: lireContreparties(),
+        slogan: vide(val("slogan")),
+        couleur_principale: vide(val("couleur_principale_txt").toUpperCase()),
+        couleur_secondaire: vide(val("couleur_secondaire_txt").toUpperCase()),
+        reseau_linkedin: vide(val("reseau_linkedin")),
+        reseau_instagram: vide(val("reseau_instagram")),
+        reseau_facebook: vide(val("reseau_facebook")),
+        reseau_youtube: vide(val("reseau_youtube")),
+        logo_path: logoPath,
+        plaquette_path: plaquettePath,
+        consentement_rgpd: true,
+        certification_exacte: true
+      };
+
+      var ins = await client.from("dossiers").insert(dossier);
+      if (ins.error) throw new Error(ins.error.message);
+
+      effacerBrouillon();
+      $("conf-email").textContent = dossier.contact_email;
+      $("formulaire-carte").hidden = true;
+      $("intro").hidden = true;
+      $("confirmation").hidden = false;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      console.error(err);
+      montrerErreur("L'envoi n'a pas abouti (" + err.message + "). Vérifiez votre connexion et réessayez. Si le problème persiste, écrivez à " + (CFG.CONTACT_EMAIL || "la FFPMI") + ".");
+      btnEnv.disabled = false; btnPrec.disabled = false;
+      btnEnv.innerHTML = libelle;
+    }
+  });
+
+  chargerBrouillon();
+  afficher(0, true);
+})();
+</script>
+</body>
+</html>
