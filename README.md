@@ -24,7 +24,7 @@ Il faut compter environ 45 minutes pour la mise en ligne complète.
 3. Copiez tout le contenu du fichier `supabase/schema.sql`, collez-le et cliquez sur **Run**. Le message « Success » doit s'afficher.
    Ce script crée la table des dossiers, le stockage privé des logos et plaquettes, et les règles de sécurité :
    - le public peut seulement **déposer** un dossier, jamais en lire un ;
-   - seuls `amelie.soubrie@ffpmi.eu` et `partenaires@ffpmi.eu` peuvent consulter et modifier les dossiers.
+   - seules les 5 adresses de l'équipe FFPMI (voir étape 2) peuvent consulter et modifier les dossiers.
 4. Ouvrez **Project Settings > API** et copiez :
    - **Project URL** (du type `https://abcd1234.supabase.co`)
    - la clé **anon public**
@@ -82,13 +82,20 @@ delete from public.admins where email = 'prenom.nom@ffpmi.eu';
 2. Cliquez sur **Add file > Upload files** et déposez tous les fichiers du dossier (en gardant le sous-dossier `supabase`), avec votre `logo-ffpmi.png` et le `config.js` complété.
 3. Ouvrez **Settings > Pages**, choisissez **Deploy from a branch**, branche `main`, dossier `/ (root)`, puis **Save**.
 4. Après une à deux minutes, l'appli est en ligne :
-   - formulaire : `https://VOTRE-COMPTE.github.io/ffpmi-partenaires/`
-   - espace FFPMI : `https://VOTRE-COMPTE.github.io/ffpmi-partenaires/admin.html`
+   - formulaire : `https://partenaires.ffpmi.eu/`
+   - espace FFPMI : `https://partenaires.ffpmi.eu/admin.html`
+   (en attendant le domaine : `https://VOTRE-COMPTE.github.io/ffpmi-partenaires/`)
 5. Retour dans Supabase, **Authentication > URL Configuration** :
-   - **Site URL** : l'adresse de l'espace FFPMI ci-dessus
-   - **Redirect URLs** : ajoutez cette même adresse (elle sert au lien « Mot de passe oublié »)
+   - **Site URL** : `https://partenaires.ffpmi.eu/admin.html`
+   - **Redirect URLs** : ajoutez `https://partenaires.ffpmi.eu/admin.html` et, en attendant que le domaine fonctionne, `https://VOTRE-COMPTE.github.io/ffpmi-partenaires/admin.html` (elles servent au lien « Mot de passe oublié »)
 
-Pour une adresse du type `partenaires.ffpmi.eu`, ajoutez-la dans **Settings > Pages > Custom domain**, puis créez chez votre hébergeur de domaine un enregistrement CNAME `partenaires` qui pointe vers `VOTRE-COMPTE.github.io`.
+**Adresse partenaires.ffpmi.eu**
+
+1. Déposez aussi le fichier `CNAME` dans le dépôt (il contient `partenaires.ffpmi.eu`).
+2. Chez l'hébergeur du domaine ffpmi.eu, dans la zone DNS, ajoutez un enregistrement **CNAME** : nom (ou sous-domaine) `partenaires`, cible `VOTRE-COMPTE.github.io.` (avec le point final si l'hébergeur le demande). Cet ajout ne touche ni aux emails ni aux autres adresses en ffpmi.eu.
+3. Dans GitHub, **Settings > Pages > Custom domain**, saisissez `partenaires.ffpmi.eu` et cliquez sur **Save**. GitHub vérifie le DNS (de quelques minutes à quelques heures).
+4. Quand la vérification est verte, cochez **Enforce HTTPS**.
+5. Recommandé : dans les réglages de votre compte GitHub (**Settings > Pages > Add a domain**), vérifiez le domaine `ffpmi.eu` en ajoutant l'enregistrement TXT indiqué. Personne d'autre ne pourra alors utiliser une adresse en ffpmi.eu sur GitHub.
 
 ## Étape 4 - Les emails automatiques (Make)
 
@@ -130,7 +137,7 @@ Avantage : {{1.record.avantage_type}} - {{1.record.avantage_valeur}}
 Contact : {{1.record.contact_prenom}} {{1.record.contact_nom}} - {{1.record.contact_email}} - {{1.record.contact_telephone}}
 
 Consulter le dossier complet dans l'espace FFPMI :
-https://VOTRE-COMPTE.github.io/ffpmi-partenaires/admin.html
+https://partenaires.ffpmi.eu/admin.html
 ```
 
 3. **Gmail > Send an email** pour l'accusé de réception :
