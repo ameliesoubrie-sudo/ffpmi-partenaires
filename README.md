@@ -268,6 +268,10 @@ Vous pouvez relancer l'opération sans risque : un fichier déjà rangé n'est p
 
 Les contrats d'Art Photo Lab, d'AXA et de Lumina n'existent qu'en version Word non signée : ils ne sont pas dans ce dossier. Ajoutez la version signée dans leur fiche quand vous l'aurez.
 
+## Fiche PDF pour le conseil d'administration
+
+Quand un dossier passe au statut « À l'étude », sa fiche affiche le bloc **Fiche pour le conseil d'administration**. Le bouton **Télécharger la fiche PDF** crée un document qui reprend tout le dossier (offre, entreprise, contacts, présentation, identité, souhaits de visibilité), avec les contreparties habituelles de la FFPMI et un encadré pour l'avis du conseil. La case « Inclure les notes internes » ajoute vos notes au PDF. La plaquette du partenaire se télécharge à part. Le PDF est créé dans le navigateur : rien n'est envoyé ailleurs.
+
 ## Générer le contrat de partenariat
 
 Quand un dossier passe au statut **Accepté**, un bloc **Contrat de partenariat** apparaît dans sa fiche.

@@ -256,6 +256,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script src="contrat.js"></script>
+<script src="fiche.js"></script>
 <script>
 (function () {
   "use strict";
@@ -513,6 +514,9 @@
       carte.appendChild(el("div", { classe: "info-import", texte: "À vérifier (import) :\n- " + d.contrat.a_verifier.join("\n- ") }));
     }
 
+    // Fiche PDF pour le conseil d'administration
+    if (window.FFPMI_FICHE && d.statut === "a_etude") carte.appendChild(sectionFicheCA(d));
+
     // Contacts
     carte.appendChild(sectionContacts(d));
 
@@ -738,6 +742,53 @@
     });
 
     box.appendChild(el("div", { classe: "actions" }, [bPdf, bEnr, etat]));
+    return box;
+  }
+
+  /* ---------- Fiche PDF pour le conseil d'administration ---------- */
+  var CONTREPARTIES_FFPMI = [
+    "Logo et présentation de l'offre sur la page partenaires du site",
+    "Mise en avant de l'offre dans la newsletter adhérents",
+    "Mention du partenariat dans le pack adhérent",
+    "Accès à la vérification d'adhésion",
+    "Badge « Partenaire FFPMI » de l'année",
+    "Avant-première pour réserver un stand au Congrès national (payant)"
+  ];
+  function sectionFicheCA(d) {
+    var box = el("div", { classe: "contrat fiche-ca" });
+    box.appendChild(el("h3", { texte: "Fiche pour le conseil d'administration" }));
+    box.appendChild(el("p", { classe: "aide-contrat", texte: "Un PDF qui reprend tout le dossier, avec un encadré pour l'avis du conseil. À télécharger puis à envoyer aux administrateurs. La plaquette du partenaire se télécharge à part, plus bas." }));
+    var cbNotes = el("input", { type: "checkbox", id: "fca-notes" });
+    var etat = el("span", { classe: "etat" });
+    var b = el("button", { type: "button", classe: "btn btn-primaire", texte: "Télécharger la fiche PDF" });
+    b.addEventListener("click", async function () {
+      if (!window.pdfMake) { etat.textContent = "Le module PDF ne s'est pas chargé. Vérifiez votre connexion et actualisez la page."; return; }
+      b.disabled = true; etat.textContent = "Création du PDF...";
+      try {
+        var imgF = document.querySelector(".marque img");
+        var logoF = await versDataUrl(imgF ? imgF.src : "logo-ffpmi.png");
+        var logoP = null;
+        if (d.logo_path && /\.(png|jpe?g)$/i.test(d.logo_path) && urlsSignees[d.logo_path]) logoP = await versDataUrl(urlsSignees[d.logo_path]);
+        var doc = window.FFPMI_FICHE.construire(d, { logoFfpmi: logoF, logoPartenaire: logoP, contreparties: CONTREPARTIES_FFPMI, notes: cbNotes.checked });
+        var nom = "Dossier partenaire FFPMI - " + nomAffiche(d).replace(/[\\\/:*?"<>|]+/g, " ").trim() + ".pdf";
+        var pdf = window.pdfMake.createPdf(doc);
+        if (window.FFPMI_DEMO) {
+          await new Promise(function (res) { pdf.getBlob(function (bl) { etat.textContent = "Aperçu : la fiche a bien été créée (" + Math.round(bl.size / 1024) + " Ko), mais le téléchargement est désactivé ici."; res(); }); });
+        } else {
+          pdf.download(nom);
+          etat.textContent = "PDF téléchargé.";
+        }
+      } catch (e) {
+        console.error(e);
+        etat.textContent = "La création du PDF a échoué : " + (e.message || e);
+      }
+      b.disabled = false;
+    });
+    box.appendChild(el("div", { classe: "actions" }, [
+      b,
+      el("label", { classe: "choix", for: "fca-notes" }, [cbNotes, el("span", { texte: "Inclure les notes internes" })]),
+      etat
+    ]));
     return box;
   }
 
