@@ -555,7 +555,7 @@
         ["Validité", validite],
         ["Modalités d'accès", d.offre_modalites],
         ["Exclusive FFPMI", d.offre_exclusive ? "Oui" : "Non"],
-        ["Visibilité souhaitée", d.contreparties]
+        ["Souhaits de visibilité", (d.contreparties || []).join("\n")]
       ]),
       bloc("Société", [
         ["Raison sociale", d.raison_sociale],
@@ -668,7 +668,7 @@
     box.appendChild(el("div", { classe: "champ", style: "margin-top:18px" }, [
       el("span", { classe: "label", texte: "Engagements de la FFPMI (article 4)" }),
       liste,
-      el("p", { classe: "aide", texte: "Cochés d'après la visibilité demandée par le partenaire. La présence au Congrès et aux événements renvoie toujours à une convention distincte." })
+      el("p", { classe: "aide", texte: "Les contreparties habituelles de la FFPMI sont cochées. Décochez celles qui ne s'appliquent pas à ce partenaire." })
     ]));
 
     function lire() {
@@ -1062,7 +1062,7 @@
       ["contact_prenom", "Prénom"], ["contact_nom", "Nom"], ["contact_fonction", "Fonction"], ["contact_email", "Email"], ["contact_telephone", "Téléphone"],
       ["offre_titre", "Offre"], ["offre_categorie", "Catégorie"], ["avantage_type", "Type d'avantage"], ["avantage_valeur", "Avantage"],
       ["offre_description", "Description"], ["offre_conditions", "Conditions"], ["offre_debut", "Début"], ["offre_fin", "Fin"],
-      ["offre_modalites", "Modalités"], ["offre_exclusive", "Exclusive"], ["contreparties", "Visibilité souhaitée"],
+      ["offre_modalites", "Modalités"], ["offre_exclusive", "Exclusive"], ["contreparties", "Souhaits de visibilité"],
       ["presentation", "Présentation"], ["lien_metiers_image", "Lien métiers de l'image"], ["references_clients", "Références"],
       ["slogan", "Accroche"], ["couleur_principale", "Couleur 1"], ["couleur_secondaire", "Couleur 2"],
       ["reseau_instagram", "Instagram"], ["reseau_facebook", "Facebook"], ["reseau_linkedin", "LinkedIn"], ["reseau_youtube", "YouTube"],

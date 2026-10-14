@@ -170,6 +170,9 @@ h3 { font-size: 16px; margin: 24px 0 10px; font-weight: 600; }
 .recap dd { margin: 0; white-space: pre-wrap; word-break: break-word; }
 @media (max-width: 560px) { .recap dl { grid-template-columns: 1fr; } .recap dd { margin-bottom: 6px; } }
 
+.contreparties-ffpmi { background: var(--gris-clair); border-radius: 8px; padding: 14px 18px; font-size: 14px; }
+.contreparties-ffpmi ul { margin: 0 0 10px; padding-left: 20px; display: grid; gap: 4px; }
+.contreparties-ffpmi p { margin: 0; font-size: 13px; color: var(--gris); }
 .mention-rgpd { font-size: 13px; color: var(--gris); background: var(--gris-clair); border-radius: 8px; padding: 14px 16px; margin: 20px 0 12px; }
 .mention-rgpd a { color: var(--orange-fonce); }
 

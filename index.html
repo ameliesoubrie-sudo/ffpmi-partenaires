@@ -264,15 +264,22 @@
             </label>
           </div>
           <div class="champ plein">
-            <span class="label">Visibilité souhaitée en contrepartie</span>
-            <div class="choix-liste" id="contreparties">
-              <label class="choix"><input type="checkbox" name="contreparties" value="Page partenaires du site FFPMI"><span>Page partenaires du site FFPMI</span></label>
-              <label class="choix"><input type="checkbox" name="contreparties" value="Newsletter adhérents"><span>Newsletter adhérents</span></label>
-              <label class="choix"><input type="checkbox" name="contreparties" value="Réseaux sociaux FFPMI"><span>Réseaux sociaux FFPMI</span></label>
-              <label class="choix"><input type="checkbox" name="contreparties" value="Présence au Congrès FFPMI"><span>Présence au Congrès FFPMI</span></label>
-              <label class="choix"><input type="checkbox" name="contreparties" value="Événements régionaux"><span>Événements régionaux</span></label>
-              <label class="choix"><input type="checkbox" name="contreparties" value="Webinaire ou intervention"><span>Webinaire ou intervention</span></label>
+            <span class="label">Ce que la FFPMI vous apporte en contrepartie</span>
+            <div class="contreparties-ffpmi">
+              <ul>
+                <li>Votre logo et la présentation de votre offre sur la page partenaires du site de la FFPMI</li>
+                <li>La mise en avant de votre offre dans la newsletter adressée aux adhérents</li>
+                <li>La mention du partenariat dans le pack adhérent</li>
+                <li>Un accès à la vérification d'adhésion, pour réserver votre offre aux adhérents</li>
+                <li>Le badge « Partenaire FFPMI » de l'année, à afficher sur vos supports</li>
+                <li>Un accès en avant-première à la réservation d'un stand au Congrès national (prestation payante)</li>
+              </ul>
+              <p>Ces contreparties sont précisées dans le contrat de partenariat. Toute présence lors des événements de la FFPMI reste soumise à son accord et, le cas échéant, payante.</p>
             </div>
+          </div>
+          <div class="champ plein">
+            <label for="souhaits_visibilite">Vos souhaits ou questions sur la visibilité</label>
+            <textarea id="souhaits_visibilite" name="souhaits_visibilite" maxlength="1500" rows="3" placeholder="Facultatif : à discuter avec l'équipe partenariats de la FFPMI"></textarea>
           </div>
         </div>
       </fieldset>
@@ -561,7 +568,6 @@
     var d = {};
     champsTexte.forEach(function (el) { d[el.name] = el.value; });
     d.offre_exclusive = $("offre_exclusive").checked;
-    d.contreparties = lireContreparties();
     try { localStorage.setItem(CLE_BROUILLON, JSON.stringify(d)); } catch (e) {}
   }
   function chargerBrouillon() {
@@ -570,10 +576,6 @@
     if (!d) return;
     champsTexte.forEach(function (el) { if (d[el.name] != null) el.value = d[el.name]; });
     $("offre_exclusive").checked = !!d.offre_exclusive;
-    (d.contreparties || []).forEach(function (v) {
-      var cb = form.querySelector('input[name=contreparties][value="' + v.replace(/"/g, '\\"') + '"]');
-      if (cb) cb.checked = true;
-    });
     ["couleur_principale", "couleur_secondaire"].forEach(function (id) {
       if (couleurValide(val(id + "_txt")) && val(id + "_txt")) $(id).value = val(id + "_txt");
     });
@@ -583,8 +585,10 @@
   }
   function effacerBrouillon() { try { localStorage.removeItem(CLE_BROUILLON); } catch (e) {} }
 
+  // Les souhaits de visibilite sont enregistres dans la colonne "contreparties" (texte libre)
   function lireContreparties() {
-    return Array.prototype.slice.call(form.querySelectorAll("input[name=contreparties]:checked")).map(function (c) { return c.value; });
+    var s = val("souhaits_visibilite");
+    return s ? [s] : [];
   }
 
   /* ---------- Recapitulatif ---------- */
@@ -609,7 +613,7 @@
         ["Validité", (val("offre_debut") || val("offre_fin")) ? ("du " + (dateFr(val("offre_debut")) || "...") + " au " + (dateFr(val("offre_fin")) || "...")) : "Permanente"],
         ["Modalités", val("offre_modalites")],
         ["Exclusive FFPMI", $("offre_exclusive").checked ? "Oui" : "Non"],
-        ["Visibilité souhaitée", lireContreparties().join(", ")]
+        ["Souhaits de visibilité", val("souhaits_visibilite")]
       ]},
       { titre: "Identité", etape: 3, lignes: [
         ["Logo", fichiers.logo ? fichiers.logo.name : ""], ["Plaquette", fichiers.plaquette ? fichiers.plaquette.name : ""],

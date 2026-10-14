@@ -18,9 +18,10 @@
     { cle: "verification", libelle: "Outil de vérification d'adhésion", contrepartie: null,
       texte: ["mettre à la disposition du Partenaire la page de vérification ", { text: "https://metiersdelimage.fr/verification-adhesion,", noWrap: true, link: "https://metiersdelimage.fr/verification-adhesion" }, " qui permet de vérifier qu'un client est adhérent à partir de son nom, de son numéro de téléphone ou de son adresse email ; cette vérification se limite à confirmer ou non la qualité d'adhérent à jour de cotisation ;"] },
     { cle: "badge", libelle: "Badge « Partenaire FFPMI »", contrepartie: null,
-      texte: "remettre au Partenaire, à la signature, le badge « Partenaire FFPMI » de l'année en cours, renouvelé chaque année tant que le contrat est en vigueur." }
+      texte: "remettre au Partenaire, à la signature, le badge « Partenaire FFPMI » de l'année en cours, renouvelé chaque année tant que le contrat est en vigueur ;" },
+    { cle: "congres", libelle: "Avant-première stand au Congrès (payant)", contrepartie: null,
+      texte: "proposer au Partenaire, en avant-première, la réservation d'un stand lors du Congrès national de la FFPMI, cette prestation restant payante selon les conditions tarifaires en vigueur." }
   ];
-  var EVENEMENTIELS = ["Présence au Congrès FFPMI", "Événements régionaux", "Webinaire ou intervention"];
 
   function aujourdHui() {
     var d = new Date();
@@ -46,10 +47,9 @@
   }
 
   function defauts(d, F) {
-    var ctr = d.contreparties || [];
     var eng = {};
     ENGAGEMENTS.forEach(function (e) {
-      eng[e.cle] = e.contrepartie ? (e.cle === "site" || ctr.indexOf(e.contrepartie) !== -1) : true;
+      eng[e.cle] = e.cle !== "reseaux";
     });
     return {
       signataire: [d.contact_prenom, d.contact_nom].filter(Boolean).join(" "),
@@ -92,7 +92,6 @@
       ", dûment habilité(e) aux fins des présentes,";
 
     var engagementsChoisis = ENGAGEMENTS.filter(function (e) { return c.engagements && c.engagements[e.cle]; });
-    var evenementsDemandes = (d.contreparties || []).filter(function (x) { return EVENEMENTIELS.indexOf(x) !== -1; });
 
     var contenu = [];
 
@@ -159,8 +158,7 @@
       contenu.push(puces(engagementsChoisis.map(function (e) { return e.texte; })));
     }
     contenu.push(p("La FFPMI décide du calendrier, de la forme et du contenu de ses communications."));
-    contenu.push(p("Toute présence du Partenaire au Congrès national de la FFPMI, lors d'événements régionaux ou sous forme d'intervention (webinaire, atelier, conférence) fait l'objet d'une convention distincte, qui en précise les conditions, notamment financières." +
-      (evenementsDemandes.length ? " Le Partenaire a fait part de son intérêt pour : " + evenementsDemandes.join(", ") + "." : "")));
+    contenu.push(p("Le partenariat ne donne pas droit à une présence gratuite aux événements de la FFPMI. Le stand au Congrès national, proposé en avant-première au Partenaire, reste une prestation payante. Toute autre présence lors d'événements régionaux ou sous forme d'intervention (webinaire, atelier, conférence) fait l'objet d'un accord distinct, qui en précise les conditions, notamment financières." ));
 
     contenu.push(art(5, "Présence et promotion lors des événements de la FFPMI"));
     contenu.push(p("Le présent partenariat ne confère au Partenaire aucun droit de présence, d'exposition ou de promotion sur les stands, salons, congrès, assemblées générales, formations, réunions régionales ou tout autre événement organisé par la FFPMI ou auquel elle participe."));

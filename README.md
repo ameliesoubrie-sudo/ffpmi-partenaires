@@ -109,7 +109,7 @@ delete from public.admins where email = 'prenom.nom@ffpmi.eu';
 
 ### 4.2 Dans Supabase
 
-1. Ouvrez **Database > Webhooks > Create a new hook**.
+1. Dans le menu de gauche, ouvrez **Integrations**, cherchez **Database Webhooks**, cliquez sur **Enable webhooks** (la première fois), puis sur **Create a new hook**.
 2. Nom : `nouveau_dossier`. Table : `dossiers`. Événement : **Insert** uniquement.
 3. Type : **HTTP Request**, méthode **POST**, URL : l'adresse du webhook Make.
 4. Dans **HTTP Headers**, ajoutez `x-ffpmi-cle` avec une valeur secrète de votre choix (par exemple une suite de 30 caractères).
