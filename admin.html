@@ -75,14 +75,17 @@
 
   .contacts { padding: 20px 24px 22px; border-bottom: 1px solid var(--gris-ligne); }
   .contacts h3 { margin: 0 0 12px; }
-  .ligne-contact { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)) 36px; gap: 8px; align-items: end; padding: 10px 0; border-top: 1px dashed var(--gris-ligne); }
-  .ligne-contact:first-of-type { border-top: 0; padding-top: 0; }
-  .ligne-contact .role { grid-column: 1 / -1; font-size: 12px; font-weight: 600; color: var(--gris); text-transform: uppercase; letter-spacing: .05em; }
-  .ligne-contact input { width: 100%; font: inherit; font-size: 14px; border: 1.5px solid var(--gris-ligne); border-radius: 6px; padding: 8px 9px; background: var(--blanc); color: var(--texte); }
-  .ligne-contact label { display: block; font-size: 11px; color: var(--gris); margin-bottom: 3px; }
-  .ligne-contact .suppr { width: 36px; height: 38px; border: 1.5px solid var(--gris-ligne); background: var(--blanc); border-radius: 6px; cursor: pointer; color: var(--gris); font-size: 18px; line-height: 1; }
+  .ligne-contact { position: relative; display: grid; gap: 4px; padding: 14px 16px; margin: 0 0 10px; border: 1px solid var(--gris-ligne); border-radius: 8px; background: var(--blanc); max-width: 620px; }
+  .ligne-contact .role { font-size: 11px; font-weight: 600; color: var(--gris); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+  .ligne-contact .info { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; gap: 10px; }
+  .ligne-contact label { font-size: 13px; color: var(--gris); }
+  .ligne-contact input { width: 100%; font: inherit; font-size: 15px; color: var(--texte); background: transparent; border: 0; border-bottom: 1px solid transparent; border-radius: 0; padding: 6px 2px; }
+  .ligne-contact input:hover { border-bottom-color: var(--gris-ligne); }
+  .ligne-contact input:focus { outline: none; border-bottom-color: var(--orange); }
+  .ligne-contact input::placeholder { color: #B9C1C5; }
+  .ligne-contact .suppr { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border: 1px solid var(--gris-ligne); background: var(--blanc); border-radius: 6px; cursor: pointer; color: var(--gris); font-size: 17px; line-height: 1; }
   .ligne-contact .suppr:hover { color: var(--erreur); border-color: var(--erreur); }
-  @media (max-width: 900px) { .ligne-contact { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ligne-contact .suppr { width: 100%; } }
+  @media (max-width: 560px) { .ligne-contact .info { grid-template-columns: 1fr; gap: 0; } }
   .contacts .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
   .contacts .etat { font-size: 13px; color: var(--gris); }
   .documents { padding: 20px 24px 22px; border-bottom: 1px solid var(--gris-ligne); }
@@ -116,9 +119,11 @@
   .entete-dossier .offre { font-weight: 600; color: var(--orange); font-size: 15px; }
   .entete-dossier .date { font-size: 13px; color: var(--gris); margin-top: 4px; }
 
-  .suivi { background: var(--fond); padding: 18px 24px; border-bottom: 1px solid var(--gris-ligne); display: grid; grid-template-columns: 220px 1fr auto; gap: 14px; align-items: end; }
+  .suivi { background: var(--fond); padding: 18px 24px; border-bottom: 1px solid var(--gris-ligne); display: grid; grid-template-columns: minmax(180px, 240px) 1fr; gap: 14px 16px; align-items: end; }
+  .suivi .champ-notes { grid-column: 1 / -1; }
+  .suivi .actions-suivi { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
   @media (max-width: 760px) { .suivi { grid-template-columns: 1fr; } }
-  .suivi .champ textarea { min-height: 44px; height: 44px; }
+  .suivi .champ textarea { min-height: 160px; resize: vertical; line-height: 1.5; }
   .suivi .etat { font-size: 13px; color: var(--gris); min-height: 18px; }
 
   .corps { padding: 8px 24px 28px; }
@@ -500,8 +505,8 @@
     });
     carte.appendChild(el("div", { classe: "suivi" }, [
       el("div", { classe: "champ" }, [el("label", { for: "f-statut", texte: "Statut" }), sel]),
-      el("div", { classe: "champ" }, [el("label", { for: "f-notes", texte: "Notes internes" }), notes]),
-      el("div", null, [enr, etat])
+      el("div", { classe: "actions-suivi" }, [enr, etat]),
+      el("div", { classe: "champ champ-notes" }, [el("label", { for: "f-notes", texte: "Notes internes" }), notes])
     ]));
 
     if (d.source === "import" && d.contrat && d.contrat.a_verifier && d.contrat.a_verifier.length) {
@@ -753,13 +758,12 @@
       var inputs = {};
       CH.forEach(function (f) {
         var id = "ctc-" + d.id + "-" + n + "-" + f[0];
-        var inp = el("input", { type: f[0] === "email" ? "email" : (f[0] === "telephone" ? "tel" : "text"), id: id });
+        var inp = el("input", { type: f[0] === "email" ? "email" : (f[0] === "telephone" ? "tel" : "text"), id: id, placeholder: "À compléter" });
         inp.value = (c && c[f[0]]) || "";
         inputs[f[0]] = inp;
-        ligne.appendChild(el("div", null, [el("label", { for: id, texte: f[1] }), inp]));
+        ligne.appendChild(el("div", { classe: "info" }, [el("label", { for: id, texte: f[1] }), inp]));
       });
-      if (principal) ligne.appendChild(el("span"));
-      else {
+      if (!principal) {
         var s = el("button", { type: "button", classe: "suppr", title: "Retirer ce contact", "aria-label": "Retirer ce contact", texte: "×" });
         s.addEventListener("click", function () { ligne.remove(); lignes = lignes.filter(function (x) { return x.ligne !== ligne; }); });
         ligne.appendChild(s);
