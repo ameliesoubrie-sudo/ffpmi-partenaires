@@ -103,6 +103,10 @@
   .documents .etat, .import-lot .etat { font-size: 13px; color: var(--gris); }
   .documents .vide-doc { font-size: 14px; color: var(--gris); margin: 0; }
   .btn-danger { background: var(--erreur); color: var(--blanc); }
+  .suppression { padding: 16px 24px 20px; border-top: 1px solid var(--gris-ligne); }
+  .suppression .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .suppression .etat { font-size: 13px; color: var(--gris); }
+  .suppression .alerte-suppression { flex-basis: 100%; margin: 0 0 4px; font-size: 14px; color: var(--erreur); }
   .import-lot { background: var(--blanc); border: 1px solid var(--gris-ligne); border-radius: var(--rayon); padding: 14px 18px; margin: 0 0 16px; }
   .import-lot summary { cursor: pointer; font-weight: 600; color: var(--gris-fonce); }
   .import-lot p { font-size: 13px; color: var(--gris); margin: 10px 0; }
@@ -586,6 +590,7 @@
     ).forEach(function (n) { corps.appendChild(n); });
 
     carte.appendChild(corps);
+    carte.appendChild(sectionSuppression(d));
     zone.appendChild(carte);
     if (window.innerWidth <= 860) window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -742,6 +747,40 @@
     });
 
     box.appendChild(el("div", { classe: "actions" }, [bPdf, bEnr, etat]));
+    return box;
+  }
+
+  /* ---------- Suppression d'un dossier (tests, dossiers incomplets) ---------- */
+  function sectionSuppression(d) {
+    var box = el("div", { classe: "suppression" });
+    var etat = el("span", { classe: "etat" });
+    var zoneBtn = el("div", { classe: "actions" });
+    var b = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Supprimer ce dossier" });
+    zoneBtn.appendChild(b);
+    zoneBtn.appendChild(etat);
+    box.appendChild(zoneBtn);
+    b.addEventListener("click", function () {
+      zoneBtn.textContent = "";
+      var nbDocs = (d.documents || []).length;
+      var msg = "Supprimer définitivement le dossier « " + nomAffiche(d) + " » ? Ses fichiers (logo, plaquette" + (nbDocs ? ", " + nbDocs + " document" + (nbDocs > 1 ? "s" : "") : "") + ") seront aussi effacés. Cette action est irréversible.";
+      var oui = el("button", { type: "button", classe: "btn btn-danger btn-petit", texte: "Confirmer la suppression" });
+      var non = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Annuler" });
+      zoneBtn.appendChild(el("p", { classe: "alerte-suppression", texte: msg }));
+      zoneBtn.appendChild(oui); zoneBtn.appendChild(non); zoneBtn.appendChild(etat);
+      non.addEventListener("click", function () { box.replaceWith(sectionSuppression(d)); });
+      oui.addEventListener("click", async function () {
+        oui.disabled = true; non.disabled = true; etat.textContent = "Suppression...";
+        var fichiers = [d.logo_path, d.plaquette_path].concat((d.documents || []).map(function (x) { return x.path; })).filter(Boolean);
+        if (fichiers.length) await sb.storage.from(BUCKET).remove(fichiers);
+        var r = await sb.from("dossiers").delete().eq("id", d.id);
+        if (r && r.error) { etat.textContent = "Erreur : " + r.error.message; oui.disabled = false; non.disabled = false; return; }
+        dossiers = dossiers.filter(function (x) { return x.id !== d.id; });
+        rendreFiltres(); rendreListe(); rendreContrats();
+        $("espace").classList.remove("detail-ouvert");
+        var zone = $("detail"); zone.textContent = "";
+        zone.appendChild(el("div", { classe: "carte attente", texte: "Le dossier « " + nomAffiche(d) + " » a été supprimé." }));
+      });
+    });
     return box;
   }
 
