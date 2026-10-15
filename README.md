@@ -268,6 +268,23 @@ Vous pouvez relancer l'opération sans risque : un fichier déjà rangé n'est p
 
 Les contrats d'Art Photo Lab, d'AXA et de Lumina n'existent qu'en version Word non signée : ils ne sont pas dans ce dossier. Ajoutez la version signée dans leur fiche quand vous l'aurez.
 
+## Partenaires événementiels
+
+Troisième onglet de l'espace FFPMI : les entreprises qui participent aux congrès et événements (exposants, sponsors, intervenants) sans proposer d'offre aux adhérents.
+
+**Mise en place, une seule fois**, dans Supabase > SQL Editor > New query :
+1. Collez `supabase/evenementiel.sql` puis **Run** : crée les tables et le Congrès 2027.
+2. Collez `supabase/import_partenaires_evenementiel.sql` puis **Run** : importe les 104 entreprises et les 22 réservations de stand du Congrès 2027. Ce fichier contient des données personnelles : ne le mettez pas sur GitHub.
+3. Dans l'onglet, ouvrez « Ranger des fichiers en lot » et sélectionnez tout le dossier « Import appli - Congrès 2027 » : les bons de réservation se rattachent à chaque participation et les logos s'affichent sur les fiches.
+
+**Au quotidien :**
+- Le menu « Afficher » passe de la liste des entreprises à la vue d'un événement (participants, contrats signés, montants réservés et encaissés).
+- Dans la vue d'un événement, la formule, le détail, le montant et le suivi se modifient directement dans le tableau.
+- Sur la fiche d'une entreprise : informations, contacts, notes internes, participations, documents (contrats, bons de réservation, factures). Un document peut être rattaché à une participation.
+- « Gérer les événements » permet de créer ou modifier un congrès, un salon ou une rencontre régionale.
+- Les exports CSV suivent les filtres : contacts, liste des entreprises, ou participants d'un événement.
+- Une entreprise qui a aussi une offre adhérents affiche un lien vers son dossier.
+
 ## Supprimer un dossier
 
 En bas de chaque fiche, **Supprimer ce dossier** efface définitivement le dossier et ses fichiers (logo, plaquette, documents). Une confirmation est demandée. À réserver aux dépôts de test ou trop incomplets : pour un partenaire refusé ou terminé, préférez les statuts « Refusé » ou « Résilié », qui gardent l'historique.

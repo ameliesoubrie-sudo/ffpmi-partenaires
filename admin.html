@@ -141,6 +141,69 @@
   .pastille i { width: 22px; height: 22px; border-radius: 6px; border: 1px solid var(--gris-ligne); display: inline-block; }
   .retour { margin: 0 0 12px; }
   @media (min-width: 861px) { .retour { display: none; } }
+  /* Partenaires evenementiels */
+  @media (min-width: 861px) { .retour.toujours { display: inline-flex; } }
+  .evt-entete { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; margin: 0 0 14px; }
+  .evt-vue { display: flex; flex-direction: column; gap: 4px; }
+  .evt-vue .label { font-size: 12px; font-weight: 600; color: var(--gris); text-transform: uppercase; letter-spacing: .05em; }
+  .evt-select-vue, .evt-select { font: inherit; font-size: 15px; font-weight: 600; color: var(--gris-fonce); border: 1.5px solid var(--gris-ligne); border-radius: 8px; padding: 8px 12px; background: var(--blanc); min-width: 260px; }
+  .evt-select { font-size: 14px; font-weight: 500; min-width: 220px; border-radius: 999px; padding: 7px 14px; }
+  .evt-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .evt-gestion .evt-liste-evts { display: grid; gap: 10px; margin-top: 8px; }
+  .evt-ligne-evt { display: grid; grid-template-columns: minmax(200px, 2fr) minmax(120px, 1fr) minmax(160px, 2fr) 150px 150px auto; gap: 8px 10px; align-items: end; padding: 10px 0; border-top: 1px dashed var(--gris-ligne); }
+  .evt-ligne-evt:first-child { border-top: 0; }
+  .evt-ligne-evt.nouveau { background: var(--fond); border-radius: 8px; padding: 10px; border-top: 0; }
+  .evt-ligne-evt .champ label { font-size: 12px; }
+  .evt-ligne-evt .etat { grid-column: 1 / -1; font-size: 13px; color: var(--gris); }
+  .evt-ligne-evt .etat:empty { display: none; }
+  .evt-ligne-actions { display: flex; gap: 6px; }
+  @media (max-width: 1000px) { .evt-ligne-evt { grid-template-columns: 1fr 1fr; } .evt-ligne-evt .champ:first-child { grid-column: 1 / -1; } }
+  @media (min-width: 861px) { #evt-liste { max-height: calc(100vh - 40px); overflow-y: auto; position: sticky; top: 20px; } }
+  .evt-logo-boite { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+  .evt-logo-btn { font-size: 12px; font-weight: 600; color: var(--orange-fonce); cursor: pointer; }
+  .evt-logo-btn:hover { text-decoration: underline; }
+  .evt-compte { font-size: 12px; color: var(--gris); padding: 8px 14px; border-bottom: 1px solid var(--gris-ligne); background: var(--fond); }
+  .badge.evt-b-propose { background: var(--gris-clair); color: var(--gris-fonce); }
+  .badge.evt-b-reserve { background: #FEF3DC; color: #8A5B00; }
+  .badge.evt-b-signe, .badge.evt-b-facture { background: #E3F2F1; color: #2F6F69; }
+  .badge.evt-b-paye { background: #EAF4DD; color: #4B6E1C; }
+  .badge.evt-b-offre { background: var(--orange-pale); color: var(--orange-fonce); }
+  .badge.evt-b-verif { background: #F6F0EB; color: var(--brun); }
+  .lien-offre { display: inline-block; margin-top: 8px; background: var(--orange-pale); color: var(--orange-fonce); border: 0; border-radius: 999px; padding: 5px 12px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; text-align: left; }
+  .lien-offre:hover { text-decoration: underline; }
+  .entete-dossier .date a { color: var(--orange-fonce); }
+  .evt-infos { padding: 20px 24px 22px; border-bottom: 1px solid var(--gris-ligne); }
+  .evt-infos .info-import { margin: 0 0 16px; }
+  .evt-verif-ok { display: inline-flex; gap: 6px; align-items: center; margin-top: 8px; font-size: 13px; color: var(--gris-fonce); cursor: pointer; }
+  .evt-infos .champ textarea { min-height: 90px; }
+  @media (max-width: 640px) { .evt-infos .grille { grid-template-columns: 1fr; } }
+  .evt-enregistrer { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 16px 24px; border-bottom: 1px solid var(--gris-ligne); background: var(--fond); }
+  .evt-enregistrer .etat { font-size: 13px; color: var(--gris); }
+  .evt-part { border: 1px solid var(--gris-ligne); border-radius: 8px; padding: 14px 16px; margin: 0 0 12px; }
+  .evt-part-titre { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; margin-bottom: 10px; }
+  .evt-part-titre strong { color: var(--gris-fonce); }
+  .evt-part-grille { display: grid; grid-template-columns: 1fr 2fr 1fr 1fr; gap: 10px 12px; }
+  .evt-part-grille .plein { grid-column: 1 / -1; }
+  .evt-part-grille .champ label { font-size: 12px; }
+  @media (max-width: 760px) { .evt-part-grille { grid-template-columns: 1fr 1fr; } }
+  .evt-docs-part { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+  .evt-part-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 10px; }
+  .evt-part-actions .etat, .evt-ligne-evt .etat { font-size: 13px; color: var(--gris); }
+  .evt-titre-evt { margin: 4px 0 12px; }
+  .evt-titre-evt h2 { margin: 0 0 2px; font-size: 22px; }
+  .evt-titre-evt .sous { margin: 0; font-size: 14px; }
+  .evt-table table { min-width: 980px; }
+  .evt-table select, .evt-table input[type=text], .evt-table input[type=number] { font: inherit; font-size: 13px; border: 1.5px solid var(--gris-ligne); border-radius: 6px; padding: 5px 6px; background: var(--blanc); color: var(--texte); }
+  .evt-table input[type=text] { width: 100%; min-width: 140px; }
+  .evt-table input[type=number] { width: 110px; text-align: right; }
+  .evt-statut { font-weight: 600; }
+  .evt-s-reserve { border-color: var(--jaune) !important; background: #FFF8EA !important; }
+  .evt-s-signe, .evt-s-facture { border-color: var(--bleu) !important; background: #F0F8F7 !important; }
+  .evt-s-paye { border-color: var(--vert) !important; background: #F3F9EA !important; }
+  .evt-table tr.annule td { opacity: .55; }
+  .evt-table .vide-table { text-align: center; color: var(--gris); padding: 28px; }
+  .evt-ajout { background: var(--blanc); border: 1px solid var(--gris-ligne); border-radius: var(--rayon); padding: 14px 16px; margin-top: 14px; }
+  .evt-aide { font-size: 13px; color: var(--gris); margin-top: 10px; }
   .attente { padding: 60px 20px; text-align: center; color: var(--gris); }
   @media (max-width: 560px) { #session-email { display: none; } .marque .nom { max-width: 140px; } }
   .detail, .liste, .espace > * { min-width: 0; }
@@ -215,7 +278,7 @@
         <h1 style="margin-bottom:4px">Partenaires FFPMI</h1>
         <p class="sous" style="margin:0" id="resume"></p>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="actions-dossiers">
         <button class="btn btn-secondaire btn-petit" id="btn-actualiser" type="button">Actualiser</button>
         <button class="btn btn-secondaire btn-petit" id="btn-export-contacts" type="button">Exporter les contacts</button>
         <button class="btn btn-secondaire btn-petit" id="btn-export" type="button">Exporter les dossiers</button>
@@ -226,6 +289,7 @@
     <div class="onglets" role="tablist">
       <button class="onglet actif" type="button" role="tab" id="onglet-dossiers" aria-selected="true">Dossiers</button>
       <button class="onglet" type="button" role="tab" id="onglet-contrats" aria-selected="false">Contrats et échéances</button>
+      <button class="onglet" type="button" role="tab" id="onglet-evt" aria-selected="false">Partenaires événementiels</button>
     </div>
     <div id="panneau-dossiers">
     <div class="barre">
@@ -252,6 +316,7 @@
       <div class="table-contrats" id="table-contrats"></div>
       <p class="aide" style="font-size:13px;color:var(--gris);margin-top:10px">La date d'effet se modifie directement dans le tableau. Durée, échéance et reconduction se règlent dans le bloc « Contrat de partenariat » de chaque fiche.</p>
     </div>
+    <div id="panneau-evt" hidden></div>
   </section>
 </main>
 
@@ -261,6 +326,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 <script src="contrat.js"></script>
 <script src="fiche.js"></script>
+<script src="evenementiel.js"></script>
 <script>
 (function () {
   "use strict";
@@ -1013,17 +1079,19 @@
 
   /* ---------- Onglets ---------- */
   function ouvrirOnglet(nom) {
-    var dossiersActif = nom === "dossiers";
-    $("panneau-dossiers").hidden = !dossiersActif;
-    $("panneau-contrats").hidden = dossiersActif;
-    $("onglet-dossiers").classList.toggle("actif", dossiersActif);
-    $("onglet-contrats").classList.toggle("actif", !dossiersActif);
-    $("onglet-dossiers").setAttribute("aria-selected", String(dossiersActif));
-    $("onglet-contrats").setAttribute("aria-selected", String(!dossiersActif));
-    if (!dossiersActif) rendreContrats();
+    ["dossiers", "contrats", "evt"].forEach(function (o) {
+      $("panneau-" + o).hidden = o !== nom;
+      $("onglet-" + o).classList.toggle("actif", o === nom);
+      $("onglet-" + o).setAttribute("aria-selected", String(o === nom));
+    });
+    $("actions-dossiers").hidden = nom === "evt";
+    $("resume").hidden = nom === "evt";
+    if (nom === "contrats") rendreContrats();
+    if (nom === "evt" && window.FFPMI_EVT) window.FFPMI_EVT.ouvrir($("panneau-evt"));
   }
   $("onglet-dossiers").addEventListener("click", function () { ouvrirOnglet("dossiers"); });
   $("onglet-contrats").addEventListener("click", function () { ouvrirOnglet("contrats"); });
+  $("onglet-evt").addEventListener("click", function () { ouvrirOnglet("evt"); });
 
   /* ---------- Contrats et echeances ---------- */
   function versDate(iso) { return iso ? new Date(iso.slice(0, 10) + "T12:00:00") : null; }
@@ -1189,6 +1257,19 @@
     if (!lignes.length) { alerteExport("Aucun partenaire au statut « Accepté » pour l'instant."); return; }
     telechargerCsv("contacts-partenaires-ffpmi-" + jourIso() + ".csv", entetes, lignes);
   });
+
+  // Outils partages avec l'onglet Partenaires evenementiels (evenementiel.js)
+  window.FFPMI_ADMIN = {
+    sb: sb, el: el, $: $, BUCKET: BUCKET, dateFr: dateFr, initiales: initiales,
+    telechargerCsv: telechargerCsv, jourIso: jourIso, alerteExport: alerteExport,
+    dossiers: function () { return dossiers; }, nomAffiche: nomAffiche,
+    ouvrirDossier: function (id) {
+      var d = dossiers.filter(function (x) { return x.id === id; })[0];
+      if (!d) return;
+      choisi = d.id; ouvrirOnglet("dossiers"); rendreListe(); rendreDetail(d);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   /* ---------- Demarrage ---------- */
   sb.auth.getSession().then(function (r) {
