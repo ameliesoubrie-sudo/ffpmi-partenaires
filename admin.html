@@ -192,7 +192,7 @@
   .evt-titre-evt { margin: 4px 0 12px; }
   .evt-titre-evt h2 { margin: 0 0 2px; font-size: 22px; }
   .evt-titre-evt .sous { margin: 0; font-size: 14px; }
-  .evt-table table { min-width: 980px; }
+  .evt-table table { min-width: 1080px; }
   .evt-table select, .evt-table input[type=text], .evt-table input[type=number] { font: inherit; font-size: 13px; border: 1.5px solid var(--gris-ligne); border-radius: 6px; padding: 5px 6px; background: var(--blanc); color: var(--texte); }
   .evt-table input[type=text] { width: 100%; min-width: 140px; }
   .evt-table input[type=number] { width: 110px; text-align: right; }
@@ -202,7 +202,13 @@
   .evt-s-paye { border-color: var(--vert) !important; background: #F3F9EA !important; }
   .evt-table tr.annule td { opacity: .55; }
   .evt-table .vide-table { text-align: center; color: var(--gris); padding: 28px; }
-  .evt-ajout { background: var(--blanc); border: 1px solid var(--gris-ligne); border-radius: var(--rayon); padding: 14px 16px; margin-top: 14px; }
+  .evt-ajout { background: var(--blanc); border: 1px solid var(--gris-ligne); border-radius: var(--rayon); padding: 14px 16px; margin: 0 0 14px; }
+  .evt-ajout .ajout-doc { margin-top: 8px; padding-top: 0; border-top: 0; }
+  .evt-ajout-titre { font-weight: 600; color: var(--gris-fonce); font-size: 15px; }
+  .evt-aide-ajout { font-size: 12px; color: var(--gris); margin: 8px 0 0; }
+  .evt-retirer { white-space: nowrap; }
+  .evt-retirer .petit { margin: 0 0 6px; }
+  .evt-retirer-actions { display: flex; gap: 6px; }
   .evt-aide { font-size: 13px; color: var(--gris); margin-top: 10px; }
   .attente { padding: 60px 20px; text-align: center; color: var(--gris); }
   @media (max-width: 560px) { #session-email { display: none; } .marque .nom { max-width: 140px; } }
@@ -566,13 +572,25 @@
     var enr = el("button", { type: "button", classe: "btn btn-primaire", texte: "Enregistrer" });
     enr.addEventListener("click", async function () {
       enr.disabled = true; etat.textContent = "Enregistrement...";
-      var r = await sb.from("dossiers").update({ statut: sel.value, notes_internes: notes.value.trim() || null }).eq("id", d.id).select().single();
+      var passageEtude = sel.value === "a_etude" && d.statut !== "a_etude";
+      var texteNotes = notes.value.trim();
+      if (passageEtude) {
+        var ligne = new Date().toLocaleDateString("fr-FR") + " : dossier passé à l'étude et mis au vote du conseil d'administration.";
+        texteNotes = texteNotes ? texteNotes + "\n" + ligne : ligne;
+      }
+      var r = await sb.from("dossiers").update({ statut: sel.value, notes_internes: texteNotes || null }).eq("id", d.id).select().single();
       enr.disabled = false;
       if (r.error) { etat.textContent = "Erreur : " + r.error.message; return; }
       for (var i = 0; i < dossiers.length; i++) if (dossiers[i].id === d.id) dossiers[i] = r.data;
       d = r.data;
       rendreFiltres(); rendreListe(); rendreContrats();
-      rendreDetail(d, "Enregistré.");
+      var msg = "Enregistré.";
+      if (passageEtude) {
+        etat.textContent = "Création de la fiche pour le CA...";
+        var resultat = await genererFicheCA(d, false);
+        msg = "Enregistré. La date de passage à l'étude est notée, " + resultat;
+      }
+      rendreDetail(d, msg);
     });
     carte.appendChild(el("div", { classe: "suivi" }, [
       el("div", { classe: "champ" }, [el("label", { for: "f-statut", texte: "Statut" }), sel]),
@@ -867,26 +885,9 @@
     var etat = el("span", { classe: "etat" });
     var b = el("button", { type: "button", classe: "btn btn-primaire", texte: "Télécharger la fiche PDF" });
     b.addEventListener("click", async function () {
-      if (!window.pdfMake) { etat.textContent = "Le module PDF ne s'est pas chargé. Vérifiez votre connexion et actualisez la page."; return; }
       b.disabled = true; etat.textContent = "Création du PDF...";
-      try {
-        var imgF = document.querySelector(".marque img");
-        var logoF = await versDataUrl(imgF ? imgF.src : "logo-ffpmi.png");
-        var logoP = null;
-        if (d.logo_path && /\.(png|jpe?g)$/i.test(d.logo_path) && urlsSignees[d.logo_path]) logoP = await versDataUrl(urlsSignees[d.logo_path]);
-        var doc = window.FFPMI_FICHE.construire(d, { logoFfpmi: logoF, logoPartenaire: logoP, contreparties: CONTREPARTIES_FFPMI, notes: cbNotes.checked });
-        var nom = "Dossier partenaire FFPMI - " + nomAffiche(d).replace(/[\\\/:*?"<>|]+/g, " ").trim() + ".pdf";
-        var pdf = window.pdfMake.createPdf(doc);
-        if (window.FFPMI_DEMO) {
-          await new Promise(function (res) { pdf.getBlob(function (bl) { etat.textContent = "Aperçu : la fiche a bien été créée (" + Math.round(bl.size / 1024) + " Ko), mais le téléchargement est désactivé ici."; res(); }); });
-        } else {
-          pdf.download(nom);
-          etat.textContent = "PDF téléchargé.";
-        }
-      } catch (e) {
-        console.error(e);
-        etat.textContent = "La création du PDF a échoué : " + (e.message || e);
-      }
+      var res = await genererFicheCA(d, cbNotes.checked);
+      res = res.replace(/^mais /, ""); etat.textContent = res.charAt(0).toUpperCase() + res.slice(1);
       b.disabled = false;
     });
     box.appendChild(el("div", { classe: "actions" }, [
@@ -895,6 +896,28 @@
       etat
     ]));
     return box;
+  }
+  // Cree et telecharge la fiche PDF du dossier pour le CA ; renvoie un message
+  async function genererFicheCA(d, avecNotes) {
+      if (!window.pdfMake || !window.FFPMI_FICHE) return "mais le module PDF ne s'est pas chargé : actualisez la page puis utilisez « Télécharger la fiche PDF ».";
+      try {
+        var imgF = document.querySelector(".marque img");
+        var logoF = await versDataUrl(imgF ? imgF.src : "logo-ffpmi.png");
+        var logoP = null;
+        if (d.logo_path && /\.(png|jpe?g)$/i.test(d.logo_path) && urlsSignees[d.logo_path]) logoP = await versDataUrl(urlsSignees[d.logo_path]);
+        var doc = window.FFPMI_FICHE.construire(d, { logoFfpmi: logoF, logoPartenaire: logoP, contreparties: CONTREPARTIES_FFPMI, notes: avecNotes });
+        var nom = "Dossier partenaire FFPMI - " + nomAffiche(d).replace(/[\\\/:*?"<>|]+/g, " ").trim() + ".pdf";
+        var pdf = window.pdfMake.createPdf(doc);
+        if (window.FFPMI_DEMO) {
+          var taille = await new Promise(function (res) { pdf.getBlob(function (bl) { res(Math.round(bl.size / 1024)); }); });
+          return "la fiche PDF pour le CA a bien été créée (" + taille + " Ko), mais le téléchargement est désactivé dans l'aperçu.";
+        }
+        pdf.download(nom);
+        return "la fiche PDF pour le CA est téléchargée : il ne reste qu'à l'envoyer aux administrateurs.";
+      } catch (e) {
+        console.error(e);
+        return "mais la création du PDF a échoué : " + (e.message || e);
+      }
   }
 
   /* ---------- Contacts du partenaire ---------- */

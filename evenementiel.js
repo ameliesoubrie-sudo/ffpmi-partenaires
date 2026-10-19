@@ -664,15 +664,17 @@
       pill(euros(somme(payees)) || "0 €", "encaissés"),
       pill(euros(somme(actives) - somme(payees)) || "0 €", "restant à encaisser")
     ]));
+    var zoneAjout = el("div", { classe: "evt-ajout" });
+    R.appendChild(zoneAjout);
 
     var lignes = toutes.map(function (p) { return { p: p, e: ent(p.entreprise_id) }; })
       .filter(function (x) { return x.e && correspond(x.e); })
       .sort(function (a, b) { return a.e.nom.localeCompare(b.e.nom, "fr"); });
 
     var t = el("table");
-    t.appendChild(el("thead", null, [el("tr", null, ["Entreprise", "Formule", "Détail", "Montant TTC", "Suivi", "Contrat", "Contact"].map(function (h) { return el("th", { texte: h }); }))]));
+    t.appendChild(el("thead", null, [el("tr", null, ["Entreprise", "Formule", "Détail", "Montant TTC", "Suivi", "Contrat", "Contact", ""].map(function (h) { return el("th", { texte: h }); }))]));
     var tb = el("tbody");
-    if (!lignes.length) tb.appendChild(el("tr", null, [el("td", { colspan: "7", classe: "vide-table", texte: toutes.length ? "Aucune participation ne correspond aux filtres." : "Aucune entreprise pour cet événement. Ajoutez-en une ci-dessous." })]));
+    if (!lignes.length) tb.appendChild(el("tr", null, [el("td", { colspan: "8", classe: "vide-table", texte: toutes.length ? "Aucune participation ne correspond aux filtres." : "Aucune entreprise pour cet événement. Ajoutez-en une avec le bloc ci-dessus." })]));
     lignes.forEach(function (x) {
       var p = x.p, e = x.e;
       var etat = el("span", { classe: "relance" });
@@ -698,7 +700,8 @@
         el("td", null, [nom, el("span", { classe: "petit", texte: e.categorie || "" })]),
         el("td", null, [formule]), el("td", null, [detail]), el("td", { classe: "num" }, [montant]),
         el("td", null, [statut, etat]), cellDoc,
-        el("td", null, [el("span", { texte: [c0.prenom, c0.nom].filter(Boolean).join(" ") }), el("span", { classe: "petit", texte: [c0.email, c0.telephone].filter(Boolean).join(" - ") })])
+        el("td", null, [el("span", { texte: [c0.prenom, c0.nom].filter(Boolean).join(" ") }), el("span", { classe: "petit", texte: [c0.email, c0.telephone].filter(Boolean).join(" - ") })]),
+        celluleRetirer(p, e)
       ]));
     });
     t.appendChild(tb);
@@ -719,8 +722,36 @@
       if (err) { etatA.textContent = "Erreur : " + err; return; }
       rendreEvenement();
     });
-    R.appendChild(el("div", { classe: "ajout-doc evt-ajout" }, [selE, selF, bA, etatA]));
-    R.appendChild(el("p", { classe: "aide evt-aide", texte: "Le suivi, la formule et le montant se modifient directement dans le tableau. Pour joindre le contrat signé ou le bon de réservation, ouvrez la fiche de l'entreprise (clic sur son nom), rubrique « Documents »." }));
+    zoneAjout.appendChild(el("div", { classe: "evt-ajout-titre", texte: "Ajouter un stand ou une participation" }));
+    zoneAjout.appendChild(el("div", { classe: "ajout-doc" }, [selE, selF, bA, etatA]));
+    zoneAjout.appendChild(el("p", { classe: "evt-aide-ajout", texte: "L'entreprise n'est pas dans la liste ? Créez d'abord sa fiche avec « Nouvelle entreprise »." }));
+    R.appendChild(el("p", { classe: "aide evt-aide", texte: "Le suivi, la formule et le montant se modifient directement dans le tableau. En cas d'annulation, passez le suivi à « Annulé » pour garder une trace, ou cliquez sur « Retirer » pour supprimer la ligne (ajout par erreur). Pour joindre le contrat signé ou le bon de réservation, ouvrez la fiche de l'entreprise (clic sur son nom), rubrique « Documents »." }));
+  }
+
+  function celluleRetirer(p, e) {
+    var td = el("td", { classe: "evt-retirer" });
+    function initial() {
+      td.textContent = "";
+      var b = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Retirer", title: "Retirer " + e.nom + " de l'événement" });
+      b.addEventListener("click", function () {
+        td.textContent = "";
+        var ok = el("button", { type: "button", classe: "btn btn-danger btn-petit", texte: "Confirmer" });
+        var non = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Annuler" });
+        td.appendChild(el("span", { classe: "petit", texte: "Retirer " + e.nom + " ?" }));
+        td.appendChild(el("span", { classe: "evt-retirer-actions" }, [ok, non]));
+        non.addEventListener("click", initial);
+        ok.addEventListener("click", async function () {
+          ok.disabled = true; non.disabled = true;
+          var r = await sb.from("participations").delete().eq("id", p.id);
+          if (r && r.error) { td.textContent = "Erreur : " + r.error.message; return; }
+          S.parts = S.parts.filter(function (x) { return x.id !== p.id; });
+          rendreEvenement();
+        });
+      });
+      td.appendChild(b);
+    }
+    initial();
+    return td;
   }
 
   /* ---------- Exports ---------- */

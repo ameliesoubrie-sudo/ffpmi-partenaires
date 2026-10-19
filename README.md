@@ -291,7 +291,7 @@ En bas de chaque fiche, **Supprimer ce dossier** efface définitivement le dossi
 
 ## Fiche PDF pour le conseil d'administration
 
-Quand un dossier passe au statut « À l'étude », sa fiche affiche le bloc **Fiche pour le conseil d'administration**. Le bouton **Télécharger la fiche PDF** crée un document qui reprend tout le dossier (offre, entreprise, contacts, présentation, identité, souhaits de visibilité), avec les contreparties habituelles de la FFPMI et un encadré pour l'avis du conseil. La case « Inclure les notes internes » ajoute vos notes au PDF. La plaquette du partenaire se télécharge à part. Le PDF est créé dans le navigateur : rien n'est envoyé ailleurs.
+Quand vous passez un dossier au statut « À l'étude » et que vous enregistrez, l'appli ajoute automatiquement aux notes internes la ligne « JJ/MM/AAAA : dossier passé à l'étude et mis au vote du conseil d'administration. » et télécharge aussitôt la fiche PDF pour le CA (sans les notes internes). Ensuite, la fiche affiche le bloc **Fiche pour le conseil d'administration**. Le bouton **Télécharger la fiche PDF** crée un document qui reprend tout le dossier (offre, entreprise, contacts, présentation, identité, souhaits de visibilité), avec les contreparties habituelles de la FFPMI et un encadré pour l'avis du conseil. La case « Inclure les notes internes » ajoute vos notes au PDF. La plaquette du partenaire se télécharge à part. Le PDF est créé dans le navigateur : rien n'est envoyé ailleurs.
 
 ## Générer le contrat de partenariat
 
