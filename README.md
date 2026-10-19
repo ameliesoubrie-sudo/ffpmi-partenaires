@@ -268,6 +268,18 @@ Vous pouvez relancer l'opération sans risque : un fichier déjà rangé n'est p
 
 Les contrats d'Art Photo Lab, d'AXA et de Lumina n'existent qu'en version Word non signée : ils ne sont pas dans ce dossier. Ajoutez la version signée dans leur fiche quand vous l'aurez.
 
+## Mise à jour des fiches par les partenaires
+
+**Mise en place, une seule fois :** dans Supabase > SQL Editor, lancez `supabase/mises_a_jour.sql` (après y avoir remplacé `ADRESSE_WEBHOOK_MAKE_MAJ` par l'adresse du webhook Make « ffpmi-maj »).
+
+- Sur la fiche d'un partenaire, bloc « Mise à jour par le partenaire » : **Envoyer une demande de mise à jour** crée un lien personnel valable 30 jours (partenaires.ffpmi.eu/?maj=...). Le mail part automatiquement via Make ; le lien peut aussi être copié ou envoyé depuis votre messagerie.
+- Le partenaire ouvre le formulaire déjà rempli, modifie ce qui a changé, dépose un nouveau logo, une plaquette, des visuels et peut proposer une offre ponctuelle.
+- Sa mise à jour arrive en « Mise à jour à valider » (pastille dans la liste, alerte mail à l'équipe). Dans la fiche, l'ancien et le nouveau contenu s'affichent côte à côte : cochez ce que vous acceptez, puis **Valider les changements cochés** (ou **Refuser**). Une ligne est ajoutée aux notes internes et à l'historique.
+- **Reconduction tacite** : chaque matin, Supabase repère les contrats reconduits (non dénoncés) et envoie au partenaire le mail « Votre partenariat est reconduit » avec son lien de mise à jour. Sa fiche passe en « Mise à jour requise » : pas de communication, et il est exclu de l'export des offres du moment, jusqu'à la validation de sa mise à jour (ou le bouton « Lever sans mise à jour »). Une ligne est ajoutée aux notes internes à chaque étape.
+- **Offres ponctuelles** : promotions datées (Black Friday...), saisies par le partenaire ou par l'équipe, avec un statut À venir / En cours / Terminée.
+- **Visuels pour la communication** : images téléchargeables pour la newsletter, les réseaux et le pack adhérent.
+- **Exporter les offres du moment** : toutes les offres permanentes et ponctuelles en cours ou à venir des partenaires acceptés.
+
 ## Partenaires événementiels
 
 Troisième onglet de l'espace FFPMI : les entreprises qui participent aux congrès et événements (exposants, sponsors, intervenants) sans proposer d'offre aux adhérents.

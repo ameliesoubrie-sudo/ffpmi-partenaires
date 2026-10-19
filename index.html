@@ -282,6 +282,16 @@
             <textarea id="souhaits_visibilite" name="souhaits_visibilite" maxlength="1500" rows="3" placeholder="Facultatif : à discuter avec l'équipe partenariats de la FFPMI"></textarea>
           </div>
         </div>
+        <div id="bloc-offre-ponctuelle" hidden>
+          <h3>Offre ponctuelle (facultatif)</h3>
+          <p class="sous" style="margin-bottom:14px">Une promotion limitée dans le temps, en plus de votre offre permanente : Black Friday, offre de lancement, salon... Elle sera présentée aux adhérents pendant sa durée de validité.</p>
+          <div class="grille">
+            <div class="champ plein"><label for="op_titre">Titre de l'offre</label><input type="text" id="op_titre" maxlength="150" placeholder="Ex. : Black Friday : -40 % sur l'abonnement annuel"></div>
+            <div class="champ plein"><label for="op_description">Détail de l'offre</label><textarea id="op_description" maxlength="1500" rows="3"></textarea></div>
+            <div class="champ"><label for="op_code">Code promo ou lien</label><input type="text" id="op_code" maxlength="300"></div>
+            <div class="champ"><span class="label">Période</span><div style="display:flex;gap:8px;flex-wrap:wrap"><input type="date" id="op_debut" aria-label="Début de l'offre ponctuelle"><input type="date" id="op_fin" aria-label="Fin de l'offre ponctuelle"></div><div class="msg-erreur">Indiquez une date de fin postérieure au début, et un titre.</div></div>
+          </div>
+        </div>
       </fieldset>
 
       <!-- ETAPE 4 -->
@@ -308,6 +318,16 @@
               <div class="apercu"><span class="nom-fichier"></span></div>
             </label>
             <div class="msg-erreur">Le fichier doit être un PDF de 10 Mo maximum.</div>
+          </div>
+          <div class="champ plein" id="bloc-visuels" hidden>
+            <span class="label">Visuels pour la communication de la FFPMI</span>
+            <label class="depot" id="depot-visuels">
+              <input type="file" id="visuels" multiple accept="image/png,image/jpeg,image/webp">
+              <div class="titre">Déposer vos visuels</div>
+              <div class="format">Facultatif. Jusqu'à 10 images PNG, JPG ou WEBP, 10 Mo maximum chacune : produits, captures, bannières...</div>
+              <div class="apercu"><span class="nom-fichier"></span></div>
+            </label>
+            <div class="msg-erreur">10 images maximum, au format PNG, JPG ou WEBP, de 10 Mo maximum chacune.</div>
           </div>
           <div class="champ plein">
             <label for="slogan">Accroche ou slogan</label>
@@ -368,8 +388,8 @@
 
   <div class="carte envoi-ok" id="confirmation" hidden>
     <div class="rond" aria-hidden="true">✓</div>
-    <h2>Merci, votre dossier a bien été envoyé</h2>
-    <p class="chapeau" style="margin:12px auto 0">La commission partenariats de la FFPMI va l'étudier et reviendra vers vous à l'adresse <strong id="conf-email"></strong>.</p>
+    <h2 id="conf-titre">Merci, votre dossier a bien été envoyé</h2>
+    <p class="chapeau" style="margin:12px auto 0"><span id="conf-texte">La commission partenariats de la FFPMI va l'étudier et reviendra vers vous à l'adresse </span><strong id="conf-email"></strong>.</p>
   </div>
 </main>
 
@@ -391,7 +411,10 @@
   var btnEnv = document.getElementById("btn-envoyer");
   var erreurGlobale = document.getElementById("erreur-globale");
   var courante = 0;
-  var fichiers = { logo: null, plaquette: null };
+  var fichiers = { logo: null, plaquette: null, visuels: [] };
+  var TOKEN = window.FFPMI_MAJ_TOKEN || new URLSearchParams(location.search).get("maj");
+  var modeMaj = !!TOKEN;
+  var infoMaj = null;
   var CLE_BROUILLON = "ffpmi-partenaire-brouillon";
 
   if (CFG.CONTACT_EMAIL) {
@@ -448,7 +471,7 @@
     });
     if (i === 0) {
       var s = $("siret");
-      if (s.value.trim() !== "" && !marquer(s, siretValide(s.value))) ok = false;
+      if (s.value.trim() !== "" && !(modeMaj && !/^\d{14}$/.test(s.value.replace(/\s+/g, ""))) && !marquer(s, siretValide(s.value))) ok = false;
       var a = $("annee_creation");
       if (a.value !== "") {
         var n = parseInt(a.value, 10);
@@ -458,9 +481,14 @@
     if (i === 2) {
       var d = val("offre_debut"), f = val("offre_fin");
       if (!marquer($("offre_fin"), !(d && f && f < d))) ok = false;
+      if (modeMaj) {
+        var od = val("op_debut"), of = val("op_fin"), ot = val("op_titre");
+        var opOk = !(od && of && of < od) && !(!ot && (val("op_description") || val("op_code") || od || of));
+        if (!marquer($("op_fin"), opOk)) ok = false;
+      }
     }
     if (i === 3) {
-      if (!marquer($("logo"), !!fichiers.logo)) ok = false;
+      if (!marquer($("logo"), !!fichiers.logo || (modeMaj && infoMaj && infoMaj.logo))) ok = false;
       ["couleur_principale_txt", "couleur_secondaire_txt"].forEach(function (id) {
         if (!marquer($(id), couleurValide(val(id)))) ok = false;
       });
@@ -559,12 +587,28 @@
   }
   brancherDepot("logo", ["image/png", "image/jpeg", "image/svg+xml", "image/webp"], 5);
   brancherDepot("plaquette", ["application/pdf"], 10);
+  (function () {
+    var input = $("visuels"), zone = $("depot-visuels");
+    function prendre(liste) {
+      var fs = Array.prototype.slice.call(liste || []);
+      var ok = fs.length <= 10 && fs.every(function (f) { return ["image/png", "image/jpeg", "image/webp"].indexOf(f.type) !== -1 && f.size <= 10 * 1024 * 1024; });
+      if (!ok) { fichiers.visuels = []; zone.classList.remove("rempli"); input.value = ""; marquer(input, false); return; }
+      fichiers.visuels = fs; marquer(input, true);
+      zone.classList.toggle("rempli", fs.length > 0);
+      zone.querySelector(".nom-fichier").textContent = fs.map(function (f) { return f.name; }).join(", ");
+    }
+    input.addEventListener("change", function () { prendre(input.files); });
+    ["dragenter", "dragover"].forEach(function (ev) { zone.addEventListener(ev, function (e) { e.preventDefault(); zone.classList.add("survol"); }); });
+    ["dragleave", "drop"].forEach(function (ev) { zone.addEventListener(ev, function (e) { e.preventDefault(); zone.classList.remove("survol"); }); });
+    zone.addEventListener("drop", function (e) { prendre(e.dataTransfer.files); });
+  })();
 
   /* ---------- Brouillon (dans ce navigateur uniquement) ---------- */
   var champsTexte = Array.prototype.slice.call(form.querySelectorAll("input[name]:not([type=checkbox]):not([type=file]), select[name], textarea[name]"))
     .filter(function (el) { return el.name !== "site_internet_bis"; });
 
   function sauverBrouillon() {
+    if (modeMaj) return;
     var d = {};
     champsTexte.forEach(function (el) { d[el.name] = el.value; });
     d.offre_exclusive = $("offre_exclusive").checked;
@@ -622,6 +666,17 @@
         ["Réseaux", [val("reseau_instagram"), val("reseau_facebook"), val("reseau_linkedin"), val("reseau_youtube")].filter(Boolean).join("\n")]
       ]}
     ];
+    if (modeMaj) {
+      blocs.push({ titre: "Offre ponctuelle", etape: 2, lignes: [
+        ["Titre", val("op_titre")], ["Détail", val("op_description")], ["Code ou lien", val("op_code")],
+        ["Période", val("op_debut") || val("op_fin") ? "du " + (dateFr(val("op_debut")) || "...") + " au " + (dateFr(val("op_fin")) || "...") : ""]
+      ]});
+      blocs.push({ titre: "Fichiers", etape: 3, lignes: [
+        ["Nouveau logo", fichiers.logo ? fichiers.logo.name : "Logo actuel conservé"],
+        ["Nouvelle plaquette", fichiers.plaquette ? fichiers.plaquette.name : ""],
+        ["Visuels", fichiers.visuels.map(function (f) { return f.name; }).join("\n")]
+      ]});
+    }
     var r = $("recap");
     r.textContent = "";
     blocs.forEach(function (b) {
@@ -657,6 +712,48 @@
       return (c === "x" ? r : (r & 3 | 8)).toString(16);
     });
   }
+  function champsSaisis() {
+    return {
+      raison_sociale: val("raison_sociale"),
+      nom_commercial: vide(val("nom_commercial")),
+      forme_juridique: vide(val("forme_juridique")),
+      siret: val("siret").replace(/\s+/g, ""),
+      adresse: val("adresse"),
+      code_postal: val("code_postal"),
+      ville: val("ville"),
+      pays: val("pays") || "France",
+      site_web: vide(val("site_web")),
+      secteur: val("secteur"),
+      annee_creation: val("annee_creation") ? parseInt(val("annee_creation"), 10) : null,
+      effectif: vide(val("effectif")),
+      contact_prenom: val("contact_prenom"),
+      contact_nom: val("contact_nom"),
+      contact_fonction: vide(val("contact_fonction")),
+      contact_email: val("contact_email").toLowerCase(),
+      contact_telephone: val("contact_telephone"),
+      presentation: val("presentation"),
+      lien_metiers_image: val("lien_metiers_image"),
+      references_clients: vide(val("references_clients")),
+      offre_titre: val("offre_titre"),
+      offre_categorie: val("offre_categorie"),
+      offre_description: val("offre_description"),
+      avantage_type: val("avantage_type"),
+      avantage_valeur: val("avantage_valeur"),
+      offre_conditions: vide(val("offre_conditions")),
+      offre_debut: vide(val("offre_debut")),
+      offre_fin: vide(val("offre_fin")),
+      offre_modalites: val("offre_modalites"),
+      offre_exclusive: $("offre_exclusive").checked,
+      contreparties: lireContreparties(),
+      slogan: vide(val("slogan")),
+      couleur_principale: vide(val("couleur_principale_txt").toUpperCase()),
+      couleur_secondaire: vide(val("couleur_secondaire_txt").toUpperCase()),
+      reseau_linkedin: vide(val("reseau_linkedin")),
+      reseau_instagram: vide(val("reseau_instagram")),
+      reseau_facebook: vide(val("reseau_facebook")),
+      reseau_youtube: vide(val("reseau_youtube"))
+    };
+  }
   function montrerErreur(msg) {
     erreurGlobale.textContent = msg;
     erreurGlobale.hidden = false;
@@ -685,6 +782,46 @@
     var id = uuid();
     var bucket = CFG.BUCKET || "partenaires";
 
+    if (modeMaj) {
+      try {
+        var base = "maj/" + TOKEN + "/";
+        var donnees = champsSaisis();
+        if (fichiers.logo) {
+          var lp = base + "logo." + extension(fichiers.logo);
+          var u1 = await client.storage.from(bucket).upload(lp, fichiers.logo, { contentType: fichiers.logo.type, upsert: true });
+          if (u1.error) throw new Error("logo : " + u1.error.message);
+          donnees.logo_path = lp;
+        }
+        if (fichiers.plaquette) {
+          var pp = base + "plaquette.pdf";
+          var u2 = await client.storage.from(bucket).upload(pp, fichiers.plaquette, { contentType: "application/pdf", upsert: true });
+          if (u2.error) throw new Error("plaquette : " + u2.error.message);
+          donnees.plaquette_path = pp;
+        }
+        donnees.visuels = [];
+        for (var v = 0; v < fichiers.visuels.length; v++) {
+          var fv = fichiers.visuels[v];
+          var vp = base + "visuel-" + (Date.now() + v) + "." + extension(fv);
+          var u3 = await client.storage.from(bucket).upload(vp, fv, { contentType: fv.type, upsert: true });
+          if (u3.error) throw new Error("visuel : " + u3.error.message);
+          donnees.visuels.push({ path: vp, nom: fv.name, taille: fv.size });
+        }
+        if (val("op_titre")) donnees.offre_ponctuelle = { titre: val("op_titre"), description: vide(val("op_description")), code: vide(val("op_code")), debut: vide(val("op_debut")), fin: vide(val("op_fin")) };
+        var rq = await client.rpc("maj_envoyer", { p_token: TOKEN, p_donnees: donnees });
+        if (rq.error) throw new Error(rq.error.message);
+        $("conf-titre").textContent = "Merci, votre mise à jour a bien été envoyée";
+        $("conf-texte").textContent = "L'équipe partenariats de la FFPMI va la vérifier avant de mettre à jour votre présentation. En cas de question, elle vous écrira à l'adresse ";
+        $("conf-email").textContent = donnees.contact_email;
+        $("formulaire-carte").hidden = true; $("intro").hidden = true; $("confirmation").hidden = false;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch (err) {
+        console.error(err);
+        montrerErreur("L'envoi n'a pas abouti (" + err.message + "). Réessayez ou écrivez à " + (CFG.CONTACT_EMAIL || "la FFPMI") + ".");
+        btnEnv.disabled = false; btnPrec.disabled = false; btnEnv.innerHTML = libelle;
+      }
+      return;
+    }
+
     try {
       var logoPath = id + "/logo." + extension(fichiers.logo);
       var up1 = await client.storage.from(bucket).upload(logoPath, fichiers.logo, { contentType: fichiers.logo.type, upsert: false });
@@ -697,52 +834,12 @@
         if (up2.error) throw new Error("plaquette : " + up2.error.message);
       }
 
-      var dossier = {
-        id: id,
-        source: "formulaire",
-        raison_sociale: val("raison_sociale"),
-        nom_commercial: vide(val("nom_commercial")),
-        forme_juridique: vide(val("forme_juridique")),
-        siret: val("siret").replace(/\s+/g, ""),
-        adresse: val("adresse"),
-        code_postal: val("code_postal"),
-        ville: val("ville"),
-        pays: val("pays") || "France",
-        site_web: vide(val("site_web")),
-        secteur: val("secteur"),
-        annee_creation: val("annee_creation") ? parseInt(val("annee_creation"), 10) : null,
-        effectif: vide(val("effectif")),
-        contact_prenom: val("contact_prenom"),
-        contact_nom: val("contact_nom"),
-        contact_fonction: vide(val("contact_fonction")),
-        contact_email: val("contact_email").toLowerCase(),
-        contact_telephone: val("contact_telephone"),
-        presentation: val("presentation"),
-        lien_metiers_image: val("lien_metiers_image"),
-        references_clients: vide(val("references_clients")),
-        offre_titre: val("offre_titre"),
-        offre_categorie: val("offre_categorie"),
-        offre_description: val("offre_description"),
-        avantage_type: val("avantage_type"),
-        avantage_valeur: val("avantage_valeur"),
-        offre_conditions: vide(val("offre_conditions")),
-        offre_debut: vide(val("offre_debut")),
-        offre_fin: vide(val("offre_fin")),
-        offre_modalites: val("offre_modalites"),
-        offre_exclusive: $("offre_exclusive").checked,
-        contreparties: lireContreparties(),
-        slogan: vide(val("slogan")),
-        couleur_principale: vide(val("couleur_principale_txt").toUpperCase()),
-        couleur_secondaire: vide(val("couleur_secondaire_txt").toUpperCase()),
-        reseau_linkedin: vide(val("reseau_linkedin")),
-        reseau_instagram: vide(val("reseau_instagram")),
-        reseau_facebook: vide(val("reseau_facebook")),
-        reseau_youtube: vide(val("reseau_youtube")),
+      var dossier = Object.assign({ id: id, source: "formulaire" }, champsSaisis(), {
         logo_path: logoPath,
         plaquette_path: plaquettePath,
         consentement_rgpd: true,
         certification_exacte: true
-      };
+      });
 
       var ins = await client.from("dossiers").insert(dossier);
       if (ins.error) throw new Error(ins.error.message);
@@ -761,8 +858,46 @@
     }
   });
 
-  chargerBrouillon();
-  afficher(0, true);
+  async function initMaj() {
+    $("formulaire-carte").hidden = true;
+    var intro = $("intro");
+    intro.querySelector("h1").textContent = "Mettre à jour vos informations";
+    intro.querySelector(".chapeau").textContent = "Chargement de votre fiche partenaire...";
+    if (!window.supabase || !CFG.SUPABASE_URL) { intro.querySelector(".chapeau").textContent = "Le service est momentanément indisponible."; return; }
+    var client = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY, { auth: { persistSession: false } });
+    var r = await client.rpc("maj_lire", { p_token: TOKEN });
+    if (r.error || !r.data) {
+      intro.querySelector(".chapeau").textContent = "Ce lien de mise à jour n'est plus valable : il a expiré ou il est incorrect. Écrivez-nous à " + (CFG.CONTACT_EMAIL || "partenaires@ffpmi.eu") + " pour en recevoir un nouveau.";
+      return;
+    }
+    infoMaj = r.data;
+    var d = infoMaj.dossier || {};
+    Object.keys(d).forEach(function (k) {
+      var el = $(k) || $(k + "_txt");
+      if (!el || d[k] == null || typeof d[k] === "object") return;
+      if (el.type === "checkbox") el.checked = !!d[k]; else el.value = d[k];
+    });
+    $("offre_exclusive").checked = !!d.offre_exclusive;
+    if (Array.isArray(d.contreparties)) $("souhaits_visibilite").value = d.contreparties.join("\n");
+    ["couleur_principale", "couleur_secondaire"].forEach(function (id) { if (couleurValide(val(id + "_txt")) && val(id + "_txt")) $(id).value = val(id + "_txt"); });
+    document.querySelectorAll(".compteur").forEach(function (c) { var t = $(c.getAttribute("data-pour")); c.textContent = t.value.length + " / " + t.maxLength; });
+    ["siret", "adresse", "code_postal"].forEach(function (id) { $(id).removeAttribute("required"); });
+    $("bloc-offre-ponctuelle").hidden = false;
+    $("bloc-visuels").hidden = false;
+    if (infoMaj.logo) {
+      $("depot-logo").querySelector(".titre").textContent = "Remplacer le logo (facultatif)";
+      $("depot-logo").querySelector(".format").textContent = "Votre logo actuel est conservé si vous n'en déposez pas de nouveau. PNG, JPG, SVG ou WEBP, 5 Mo maximum.";
+    }
+    var exp = infoMaj.expire_le ? new Date(infoMaj.expire_le).toLocaleDateString("fr-FR") : "";
+    intro.querySelector(".chapeau").textContent = "Vos informations actuelles sont déjà remplies : modifiez ce qui a changé, ajoutez vos nouveaux visuels et, si vous le souhaitez, une offre ponctuelle. L'équipe partenariats de la FFPMI validera la mise à jour avant sa publication." + (exp ? " Ce lien est valable jusqu'au " + exp + "." : "");
+    btnEnv.textContent = "Envoyer ma mise à jour";
+    document.title = "Mise à jour partenaire FFPMI";
+    $("formulaire-carte").hidden = false;
+    afficher(0, true);
+  }
+
+  if (modeMaj) initMaj();
+  else { chargerBrouillon(); afficher(0, true); }
 })();
 </script>
 </body>

@@ -103,6 +103,49 @@
   .documents .etat, .import-lot .etat { font-size: 13px; color: var(--gris); }
   .documents .vide-doc { font-size: 14px; color: var(--gris); margin: 0; }
   .btn-danger { background: var(--erreur); color: var(--blanc); }
+  .badge-maj { background: #E3F2F1; color: #2F6F69; }
+  .badge-maj-requise { background: #FBEAEA; color: var(--erreur); }
+  .maj-requise { border: 2px solid #F2C9C6; background: #FDF4F3; color: var(--gris-fonce); border-radius: 10px; padding: 12px 14px; margin: 6px 0 14px; font-size: 14px; }
+  .maj-requise strong { color: var(--erreur); }
+  .maj-partenaire .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+  .maj-label { font-size: 13px; color: var(--gris); }
+  .maj-email { font: inherit; font-size: 14px; border: 1.5px solid var(--gris-ligne); border-radius: 6px; padding: 6px 8px; min-width: 240px; }
+  .maj-lien { margin-top: 10px; }
+  .maj-lien-info { font-size: 13px; color: var(--gris-fonce); margin: 0; }
+  .maj-url { font-size: 12px; background: var(--fond); border: 1px solid var(--gris-ligne); border-radius: 6px; padding: 5px 8px; word-break: break-all; max-width: 100%; }
+  .maj-revue { border: 2px solid var(--bleu); background: #F0F8F7; border-radius: 10px; padding: 14px 16px; margin: 6px 0 18px; }
+  .maj-revue-titre { font-weight: 700; color: #2F6F69; margin-bottom: 10px; }
+  .maj-table-zone { overflow-x: auto; background: var(--blanc); border-radius: 8px; border: 1px solid var(--gris-ligne); }
+  .maj-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .maj-table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--gris); padding: 8px 10px; border-bottom: 1px solid var(--gris-ligne); background: var(--fond); }
+  .maj-table td { padding: 8px 10px; border-bottom: 1px solid var(--gris-ligne); vertical-align: top; white-space: pre-wrap; word-break: break-word; }
+  .maj-table td:first-child { width: 28px; }
+  .maj-champ { font-weight: 600; color: var(--gris-fonce); width: 170px; }
+  .maj-avant { color: var(--gris); text-decoration: line-through; text-decoration-color: #c9c9c9; }
+  .maj-apres { color: var(--texte); background: #F3F9EA; }
+  .maj-miniature { display: block; max-width: 140px; max-height: 90px; object-fit: contain; margin-bottom: 4px; background: var(--blanc); }
+  .maj-hist { margin-top: 12px; font-size: 13px; }
+  .maj-hist summary { cursor: pointer; color: var(--gris-fonce); font-weight: 600; }
+  .maj-historique { margin: 8px 0 0; padding-left: 18px; color: var(--gris-fonce); }
+  .op-ligne { display: grid; grid-template-columns: 2fr 3fr 2fr auto; gap: 8px 10px; align-items: start; padding: 10px 0; border-top: 1px dashed var(--gris-ligne); }
+  .op-ligne.nouveau { background: var(--fond); border-radius: 8px; padding: 10px; border-top: 0; margin-top: 8px; }
+  .op-ligne > .badge { grid-column: 1 / -1; justify-self: start; }
+  .op-ligne input, .op-ligne textarea { font: inherit; font-size: 13px; border: 1.5px solid var(--gris-ligne); border-radius: 6px; padding: 6px 8px; width: 100%; background: var(--blanc); }
+  .op-ligne textarea { min-height: 38px; resize: vertical; }
+  .op-dates { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--gris); }
+  .op-dates input { width: auto; }
+  .op-ligne .actions { grid-column: 1 / -1; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .op-ligne .etat { font-size: 13px; color: var(--gris); }
+  @media (max-width: 860px) { .op-ligne { grid-template-columns: 1fr; } }
+  .badge.op-encours { background: #EAF4DD; color: #4B6E1C; }
+  .badge.op-avenir { background: #FEF3DC; color: #8A5B00; }
+  .badge.op-terminee { background: var(--gris-clair); color: var(--gris-fonce); }
+  .visuels-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+  .visuel { border: 1px solid var(--gris-ligne); border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px; background: var(--blanc); }
+  .visuel img { width: 100%; height: 110px; object-fit: contain; background: var(--fond); border-radius: 4px; }
+  .visuel .nom-doc { font-size: 12px; min-width: 0; }
+  .visuel .actions-doc { display: flex; gap: 6px; flex-wrap: wrap; }
+
   .suppression { padding: 16px 24px 20px; border-top: 1px solid var(--gris-ligne); }
   .suppression .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
   .suppression .etat { font-size: 13px; color: var(--gris); }
@@ -315,6 +358,7 @@
       <div style="display:flex;gap:8px;flex-wrap:wrap" id="actions-dossiers">
         <button class="btn btn-secondaire btn-petit" id="btn-actualiser" type="button">Actualiser</button>
         <button class="btn btn-secondaire btn-petit" id="btn-export-contacts" type="button">Exporter les contacts</button>
+        <button class="btn btn-secondaire btn-petit" id="btn-export-offres" type="button">Exporter les offres du moment</button>
         <button class="btn btn-secondaire btn-petit" id="btn-export" type="button">Exporter les dossiers</button>
       </div>
     </div>
@@ -471,6 +515,7 @@
     var r = await sb.from("dossiers").select("*").order("created_at", { ascending: false });
     if (r.error) { $("erreur-dossiers").textContent = "Chargement impossible : " + r.error.message; $("erreur-dossiers").hidden = false; return; }
     dossiers = r.data || [];
+    await chargerMaj();
     var logos = dossiers.map(function (d) { return d.logo_path; }).filter(function (p) { return p && !urlsSignees[p]; });
     if (logos.length) {
       var s = await sb.storage.from(BUCKET).createSignedUrls(logos, 3600);
@@ -529,7 +574,8 @@
           el("span", { classe: "meta" }, [
             el("span", { classe: "badge st-" + d.statut, texte: libStatut(d.statut) }),
             el("span", { texte: d.source === "import" ? "Contrat existant" : dateFr(d.created_at) }),
-            el("span", { texte: d.offre_categorie || "" })
+            el("span", { texte: d.offre_categorie || "" }),
+            majEnAttente(d.id) ? el("span", { classe: "badge badge-maj", texte: "Mise à jour à valider" }) : (d.maj_requise ? el("span", { classe: "badge badge-maj-requise", texte: "Mise à jour requise" }) : null)
           ])
         ])
       ]);
@@ -633,8 +679,15 @@
     // Fiche PDF pour le conseil d'administration
     if (window.FFPMI_FICHE && d.statut === "a_etude") carte.appendChild(sectionFicheCA(d));
 
+    // Mise a jour par le partenaire (lien, validation des changements proposes)
+    carte.appendChild(sectionMaj(d));
+
     // Contacts
     carte.appendChild(sectionContacts(d));
+
+    // Offres ponctuelles et visuels de communication
+    carte.appendChild(sectionOffresPonctuelles(d));
+    carte.appendChild(sectionVisuels(d));
 
     // Documents (contrats signes, avenants...)
     carte.appendChild(sectionDocuments(d));
@@ -895,6 +948,325 @@
     });
     return box;
   }
+
+  /* ---------- Mises a jour par les partenaires ---------- */
+  var majDemandes = [], majLiens = [], majDispo = false;
+  async function chargerMaj() {
+    var rm = await sb.from("maj_demandes").select("*").eq("statut", "en_attente").order("cree_le", { ascending: false });
+    var rl = await sb.from("maj_liens").select("*").order("cree_le", { ascending: false });
+    majDispo = !(rm && rm.error);
+    majDemandes = majDispo ? (rm.data || []) : [];
+    majLiens = rl && !rl.error ? (rl.data || []) : [];
+  }
+  function majEnAttente(id) { return majDemandes.filter(function (m) { return m.dossier_id === id; })[0]; }
+  var CHAMPS_MAJ = [
+    ["raison_sociale", "Raison sociale"], ["nom_commercial", "Nom commercial"], ["forme_juridique", "Forme juridique"], ["siret", "SIRET"],
+    ["adresse", "Adresse"], ["code_postal", "Code postal"], ["ville", "Ville"], ["pays", "Pays"], ["site_web", "Site internet"],
+    ["secteur", "Secteur"], ["annee_creation", "Année de création"], ["effectif", "Effectif"],
+    ["contact_prenom", "Prénom du contact"], ["contact_nom", "Nom du contact"], ["contact_fonction", "Fonction du contact"],
+    ["contact_email", "Email du contact"], ["contact_telephone", "Téléphone du contact"],
+    ["presentation", "Présentation"], ["lien_metiers_image", "Lien avec les métiers de l'image"], ["references_clients", "Références"],
+    ["offre_titre", "Titre de l'offre"], ["offre_categorie", "Catégorie de l'offre"], ["avantage_type", "Type d'avantage"],
+    ["avantage_valeur", "Avantage"], ["offre_description", "Description de l'offre"], ["offre_conditions", "Conditions"],
+    ["offre_debut", "Début de l'offre"], ["offre_fin", "Fin de l'offre"], ["offre_modalites", "Modalités d'accès"],
+    ["offre_exclusive", "Offre exclusive"], ["contreparties", "Souhaits de visibilité"], ["slogan", "Accroche"],
+    ["couleur_principale", "Couleur principale"], ["couleur_secondaire", "Couleur secondaire"],
+    ["reseau_instagram", "Instagram"], ["reseau_facebook", "Facebook"], ["reseau_linkedin", "LinkedIn"], ["reseau_youtube", "YouTube"]
+  ];
+  function normMaj(v) {
+    if (v == null) return "";
+    if (Array.isArray(v)) return v.join("\n").trim();
+    if (typeof v === "boolean") return v ? "Oui" : "Non";
+    return String(v).trim();
+  }
+  function jeton() { return Array.prototype.map.call(crypto.getRandomValues(new Uint8Array(24)), function (b) { return b.toString(16).padStart(2, "0"); }).join(""); }
+  function lienMaj(t) { return "https://partenaires.ffpmi.eu/?maj=" + t; }
+  function emailSession() { return ($("session-email").textContent || "").trim(); }
+  function idAleatoire() { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : jeton().slice(0, 32); }
+
+  function sectionMaj(d) {
+    var box = el("div", { classe: "contrat maj-partenaire" });
+    box.appendChild(el("h3", { texte: "Mise à jour par le partenaire" }));
+    if (!majDispo) {
+      box.appendChild(el("p", { classe: "aide-contrat", texte: "Fonction à activer : lancez le fichier mises_a_jour.sql dans Supabase (SQL Editor), puis actualisez la page." }));
+      return box;
+    }
+    if (d.maj_requise) {
+      var bLever = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Lever sans mise à jour" });
+      var etatL = el("span", { classe: "etat" });
+      bLever.addEventListener("click", async function () {
+        bLever.disabled = true;
+        var ligne = new Date().toLocaleDateString("fr-FR") + " : communication rétablie sans mise à jour du partenaire (" + emailSession() + ").";
+        var r = await sb.from("dossiers").update({ maj_requise: false, notes_internes: (d.notes_internes ? d.notes_internes + "\n" : "") + ligne }).eq("id", d.id).select().single();
+        if (r.error) { etatL.textContent = "Erreur : " + r.error.message; bLever.disabled = false; return; }
+        for (var i = 0; i < dossiers.length; i++) if (dossiers[i].id === d.id) dossiers[i] = r.data;
+        rendreListe(); rendreDetail(r.data, "Communication rétablie.");
+      });
+      box.appendChild(el("div", { classe: "maj-requise" }, [
+        el("strong", { texte: "Contrat reconduit" + (d.reconduction_envoyee_pour ? " le " + dateFr(d.reconduction_envoyee_pour) : "") + " : mise à jour du dossier demandée au partenaire." }),
+        el("span", { texte: " Pas de communication sur ce partenaire tant que sa mise à jour n'est pas validée. Il n'apparaît pas dans l'export des offres du moment." }),
+        el("div", { classe: "actions" }, [bLever, etatL])
+      ]));
+    }
+    var dm = majEnAttente(d.id);
+    if (dm) box.appendChild(blocRevueMaj(d, dm));
+
+    // Envoi du lien
+    var actif = majLiens.filter(function (l) { return l.dossier_id === d.id && new Date(l.expire_le) > new Date(); })[0];
+    var etat = el("span", { classe: "etat" });
+    var email = el("input", { type: "email", "aria-label": "Adresse du partenaire", classe: "maj-email" });
+    email.value = d.contact_email || "";
+    var b = el("button", { type: "button", classe: "btn btn-primaire btn-petit", texte: actif ? "Envoyer un nouveau lien" : "Envoyer une demande de mise à jour" });
+    box.appendChild(el("p", { classe: "aide-contrat", texte: "Le partenaire reçoit par mail un lien personnel, valable 30 jours, vers le formulaire déjà rempli avec ses informations. Il peut tout modifier, ajouter des visuels et une offre ponctuelle. Rien n'est publié avant votre validation ici." }));
+    var zoneLien = el("div", { classe: "maj-lien" });
+    function montrerLien(l, nouveau) {
+      zoneLien.textContent = "";
+      var url = lienMaj(l.token);
+      var bCopier = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Copier le lien" });
+      bCopier.addEventListener("click", function () {
+        (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { bCopier.textContent = "Lien copié"; }, function () { window.prompt("Lien à copier :", url); });
+      });
+      var sujet = "FFPMI - Mise à jour de vos informations partenaire";
+      var corps = "Bonjour " + (l.prenom || "") + ",\n\nPour mettre à jour les informations que la FFPMI présente à ses adhérents (présentation, offre, visuels, offre ponctuelle), il vous suffit d'ouvrir ce lien personnel :\n" + url + "\n\nVos informations actuelles sont déjà remplies : modifiez ce qui a changé. Le lien est valable jusqu'au " + dateFr(l.expire_le) + ".\n\nBien cordialement,\nL'équipe partenariats\nFFPMI";
+      var mail = el("a", { classe: "btn btn-secondaire btn-petit", href: "mailto:" + encodeURIComponent(l.envoye_a || "") + "?subject=" + encodeURIComponent(sujet) + "&body=" + encodeURIComponent(corps), texte: "Écrire depuis ma messagerie" });
+      zoneLien.appendChild(el("p", { classe: "maj-lien-info", texte: (nouveau ? "Demande envoyée à " : "Lien envoyé le " + dateFr(l.cree_le) + " à ") + (l.envoye_a || "") + ", valable jusqu'au " + dateFr(l.expire_le) + "." + (nouveau ? " Le mail part automatiquement si l'automatisation Make est active ; sinon, utilisez un des boutons." : "") }));
+      zoneLien.appendChild(el("div", { classe: "actions" }, [el("code", { classe: "maj-url", texte: url }), bCopier, mail]));
+    }
+    if (actif) montrerLien(actif, false);
+    b.addEventListener("click", async function () {
+      var adr = email.value.trim().toLowerCase();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(adr)) { email.focus(); etat.textContent = "Indiquez l'email du partenaire."; return; }
+      b.disabled = true; etat.textContent = "Création du lien...";
+      var l = { token: jeton(), dossier_id: d.id, cree_par: emailSession(), envoye_a: adr, prenom: d.contact_prenom || null, expire_le: new Date(Date.now() + 30 * 86400000).toISOString() };
+      var r = await sb.from("maj_liens").insert(l).select().single();
+      b.disabled = false;
+      if (r.error) { etat.textContent = "Erreur : " + r.error.message; return; }
+      majLiens.unshift(r.data); etat.textContent = "";
+      montrerLien(r.data, true);
+    });
+    box.appendChild(el("div", { classe: "actions" }, [el("label", { classe: "maj-label", texte: "Envoyer à" }), email, b, etat]));
+    box.appendChild(zoneLien);
+
+    var hist = d.historique_maj || [];
+    if (hist.length) {
+      var ul = el("ul", { classe: "maj-historique" });
+      hist.slice().reverse().forEach(function (h) { ul.appendChild(el("li", { texte: dateFr(h.date) + " : mise à jour validée par " + (h.par || "l'équipe") + (h.champs && h.champs.length ? " (" + h.champs.join(", ") + ")" : "") })); });
+      box.appendChild(el("details", { classe: "maj-hist" }, [el("summary", { texte: "Historique des mises à jour (" + hist.length + ")" }), ul]));
+    }
+    return box;
+  }
+
+  function blocRevueMaj(d, dm) {
+    var nv = dm.donnees || {};
+    var w = el("div", { classe: "maj-revue" });
+    w.appendChild(el("div", { classe: "maj-revue-titre", texte: "Mise à jour proposée le " + dateFr(dm.cree_le, true) + " : cochez ce que vous acceptez" }));
+    var cases = [];
+    var table = el("table", { classe: "maj-table" });
+    table.appendChild(el("thead", null, [el("tr", null, ["", "Champ", "Actuellement", "Proposé"].map(function (h) { return el("th", { texte: h }); }))]));
+    var tb = el("tbody");
+    CHAMPS_MAJ.forEach(function (c) {
+      if (!(c[0] in nv)) return;
+      var a = normMaj(d[c[0]]), n = normMaj(nv[c[0]]);
+      if (a === n) return;
+      var cb = el("input", { type: "checkbox", "aria-label": "Accepter : " + c[1] }); cb.checked = true;
+      cases.push({ cb: cb, champ: c[0], libelle: c[1] });
+      tb.appendChild(el("tr", null, [el("td", null, [cb]), el("td", { classe: "maj-champ", texte: c[1] }), el("td", { classe: "maj-avant", texte: a || "(vide)" }), el("td", { classe: "maj-apres", texte: n || "(vide)" })]));
+    });
+    function ligneFichier(libelle, path, cle) {
+      var cb = el("input", { type: "checkbox", "aria-label": "Accepter : " + libelle }); cb.checked = true;
+      var td = el("td", { classe: "maj-apres" });
+      sb.storage.from(BUCKET).createSignedUrl(path, 3600).then(function (r) {
+        if (r && r.data && r.data.signedUrl) {
+          if (/\.pdf$/i.test(path)) td.appendChild(el("a", { href: r.data.signedUrl, target: "_blank", rel: "noopener", texte: "Voir le fichier" }));
+          else td.appendChild(el("img", { src: r.data.signedUrl, alt: "", classe: "maj-miniature" }));
+        } else td.textContent = "Nouveau fichier";
+      });
+      cases.push({ cb: cb, champ: cle, libelle: libelle, fichier: true });
+      tb.appendChild(el("tr", null, [el("td", null, [cb]), el("td", { classe: "maj-champ", texte: libelle }), el("td", { classe: "maj-avant", texte: d[cle] ? "Fichier actuel" : "(aucun)" }), td]));
+    }
+    if (nv.logo_path) ligneFichier("Logo", nv.logo_path, "logo_path");
+    if (nv.plaquette_path) ligneFichier("Plaquette", nv.plaquette_path, "plaquette_path");
+    var casesVisuels = [];
+    (nv.visuels || []).forEach(function (v, i) {
+      var cb = el("input", { type: "checkbox", "aria-label": "Accepter le visuel " + v.nom }); cb.checked = true;
+      var td = el("td", { classe: "maj-apres" }, [el("span", { texte: v.nom })]);
+      sb.storage.from(BUCKET).createSignedUrl(v.path, 3600).then(function (r) { if (r && r.data && r.data.signedUrl) td.insertBefore(el("img", { src: r.data.signedUrl, alt: "", classe: "maj-miniature" }), td.firstChild); });
+      casesVisuels.push({ cb: cb, v: v });
+      tb.appendChild(el("tr", null, [el("td", null, [cb]), el("td", { classe: "maj-champ", texte: "Nouveau visuel " + (i + 1) }), el("td", { classe: "maj-avant", texte: "" }), td]));
+    });
+    var caseOffre = null;
+    if (nv.offre_ponctuelle && nv.offre_ponctuelle.titre) {
+      var o = nv.offre_ponctuelle;
+      caseOffre = el("input", { type: "checkbox", "aria-label": "Accepter l'offre ponctuelle" }); caseOffre.checked = true;
+      tb.appendChild(el("tr", null, [el("td", null, [caseOffre]), el("td", { classe: "maj-champ", texte: "Offre ponctuelle" }), el("td", { classe: "maj-avant", texte: "" }),
+        el("td", { classe: "maj-apres", texte: [o.titre, o.description, o.code ? "Code : " + o.code : "", (o.debut || o.fin) ? "Du " + (dateFr(o.debut) || "...") + " au " + (dateFr(o.fin) || "...") : ""].filter(Boolean).join("\n") })]));
+    }
+    if (!tb.childNodes.length) tb.appendChild(el("tr", null, [el("td", { colspan: "4", classe: "maj-avant", texte: "Le partenaire n'a rien changé." })]));
+    table.appendChild(tb);
+    w.appendChild(el("div", { classe: "maj-table-zone" }, [table]));
+
+    var etat = el("span", { classe: "etat" });
+    var bOk = el("button", { type: "button", classe: "btn btn-primaire btn-petit", texte: "Valider les changements cochés" });
+    var bNon = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Refuser la mise à jour" });
+    async function clore(statut) {
+      var r = await sb.from("maj_demandes").update({ statut: statut, traite_le: new Date().toISOString(), traite_par: emailSession() }).eq("id", dm.id);
+      if (r && r.error) throw new Error(r.error.message);
+      majDemandes = majDemandes.filter(function (m) { return m.id !== dm.id; });
+    }
+    bOk.addEventListener("click", async function () {
+      bOk.disabled = true; bNon.disabled = true; etat.textContent = "Mise à jour de la fiche...";
+      try {
+        var upd = {}, libelles = [];
+        cases.forEach(function (c) { if (c.cb.checked) { upd[c.champ] = nv[c.champ] === "" ? null : nv[c.champ]; libelles.push(c.libelle); } });
+        var maintenant = new Date().toISOString();
+        var vs = casesVisuels.filter(function (x) { return x.cb.checked; }).map(function (x) { return Object.assign({}, x.v, { ajoute_le: maintenant, source: "partenaire" }); });
+        if (vs.length) { upd.visuels = (d.visuels || []).concat(vs); libelles.push(vs.length + " visuel" + (vs.length > 1 ? "s" : "")); }
+        if (caseOffre && caseOffre.checked) { upd.offres_ponctuelles = (d.offres_ponctuelles || []).concat([Object.assign({ id: idAleatoire(), ajoute_le: maintenant, source: "partenaire" }, nv.offre_ponctuelle)]); libelles.push("offre ponctuelle"); }
+        upd.historique_maj = (d.historique_maj || []).concat([{ date: maintenant, par: emailSession(), champs: libelles }]);
+        if (d.maj_requise) upd.maj_requise = false;
+        var ligne = new Date().toLocaleDateString("fr-FR") + " : mise à jour du partenaire validée" + (libelles.length ? " (" + libelles.join(", ") + ")" : "") + "." + (d.maj_requise ? " Communication rétablie : le service communication peut relancer la communication sur ce partenaire." : "");
+        upd.notes_internes = (d.notes_internes ? d.notes_internes + "\n" : "") + ligne;
+        var r = await sb.from("dossiers").update(upd).eq("id", d.id).select().single();
+        if (r.error) throw new Error(r.error.message);
+        await clore("validee");
+        for (var i = 0; i < dossiers.length; i++) if (dossiers[i].id === d.id) dossiers[i] = r.data;
+        if (upd.logo_path) { delete urlsSignees[upd.logo_path]; var s2 = await sb.storage.from(BUCKET).createSignedUrls([upd.logo_path], 3600); ((s2 && s2.data) || []).forEach(function (x) { if (x.signedUrl) urlsSignees[x.path] = x.signedUrl; }); }
+        rendreFiltres(); rendreListe(); rendreContrats();
+        rendreDetail(r.data, "Mise à jour validée : la fiche est à jour." + (d.maj_requise ? " La communication sur ce partenaire peut reprendre." : ""));
+      } catch (e) { etat.textContent = "Erreur : " + e.message; bOk.disabled = false; bNon.disabled = false; }
+    });
+    bNon.addEventListener("click", async function () {
+      bOk.disabled = true; bNon.disabled = true;
+      try { await clore("refusee"); rendreListe(); rendreDetail(d, "Mise à jour refusée : la fiche n'a pas changé."); }
+      catch (e) { etat.textContent = "Erreur : " + e.message; bOk.disabled = false; bNon.disabled = false; }
+    });
+    w.appendChild(el("div", { classe: "actions" }, [bOk, bNon, etat]));
+    return w;
+  }
+
+  /* ---------- Offres ponctuelles ---------- */
+  function etatOffre(o) {
+    var auj = new Date().toISOString().slice(0, 10);
+    if (o.fin && o.fin < auj) return ["terminee", "Terminée"];
+    if (o.debut && o.debut > auj) return ["avenir", "À venir"];
+    return ["encours", "En cours"];
+  }
+  function sectionOffresPonctuelles(d) {
+    var box = el("div", { classe: "documents offres-ponct" });
+    box.appendChild(el("h3", { texte: "Offres ponctuelles" }));
+    box.appendChild(el("p", { classe: "vide-doc", texte: "Promotions limitées dans le temps, en plus de l'offre permanente : Black Friday, lancement, salon..." }));
+    var offres = (d.offres_ponctuelles || []).slice().sort(function (a, b) { return String(b.debut || "").localeCompare(String(a.debut || "")); });
+    async function enregistrer(liste, etat) {
+      etat.textContent = "Enregistrement...";
+      var r = await sb.from("dossiers").update({ offres_ponctuelles: liste }).eq("id", d.id).select().single();
+      if (r.error) { etat.textContent = "Erreur : " + r.error.message; return; }
+      for (var i = 0; i < dossiers.length; i++) if (dossiers[i].id === d.id) dossiers[i] = r.data;
+      rendreDetail(r.data, "Offres ponctuelles enregistrées.");
+    }
+    function ligne(o) {
+      var nouveau = !o; o = o || { titre: "", description: "", code: "", debut: "", fin: "" };
+      var t = el("input", { type: "text", placeholder: nouveau ? "Nouvelle offre, ex. : Black Friday -40 %" : "Titre", maxlength: "150" }); t.value = o.titre || "";
+      var de = el("textarea", { rows: "2", placeholder: "Détail" }); de.value = o.description || "";
+      var c = el("input", { type: "text", placeholder: "Code promo ou lien" }); c.value = o.code || "";
+      var d1 = el("input", { type: "date", "aria-label": "Début" }); d1.value = o.debut || "";
+      var d2 = el("input", { type: "date", "aria-label": "Fin" }); d2.value = o.fin || "";
+      var etat = el("span", { classe: "etat" });
+      var bE = el("button", { type: "button", classe: "btn btn-petit " + (nouveau ? "btn-primaire" : "btn-secondaire"), texte: nouveau ? "Ajouter l'offre" : "Enregistrer" });
+      bE.addEventListener("click", function () {
+        if (!t.value.trim()) { t.focus(); etat.textContent = "Indiquez un titre."; return; }
+        if (d1.value && d2.value && d2.value < d1.value) { etat.textContent = "La fin doit être après le début."; return; }
+        var maj = { titre: t.value.trim(), description: de.value.trim() || null, code: c.value.trim() || null, debut: d1.value || null, fin: d2.value || null };
+        var liste = nouveau ? (d.offres_ponctuelles || []).concat([Object.assign({ id: idAleatoire(), ajoute_le: new Date().toISOString(), source: "ffpmi" }, maj)])
+                            : (d.offres_ponctuelles || []).map(function (x) { return x.id === o.id ? Object.assign({}, x, maj) : x; });
+        enregistrer(liste, etat);
+      });
+      var enfants = [t, de, c, el("span", { classe: "op-dates" }, [d1, el("span", { texte: "au" }), d2]), el("div", { classe: "actions" }, [bE])];
+      if (!nouveau) {
+        var et = etatOffre(o);
+        enfants.unshift(el("span", { classe: "badge op-" + et[0], texte: et[1] + (o.source === "partenaire" ? " - proposée par le partenaire" : "") }));
+        var bS = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Supprimer" });
+        bS.addEventListener("click", function () { enregistrer((d.offres_ponctuelles || []).filter(function (x) { return x.id !== o.id; }), etat); });
+        enfants[enfants.length - 1].appendChild(bS);
+      }
+      enfants[enfants.length - 1].appendChild(etat);
+      return el("div", { classe: "op-ligne" + (nouveau ? " nouveau" : "") }, enfants);
+    }
+    offres.forEach(function (o) { box.appendChild(ligne(o)); });
+    box.appendChild(ligne(null));
+    return box;
+  }
+
+  /* ---------- Visuels de communication ---------- */
+  function sectionVisuels(d) {
+    var box = el("div", { classe: "documents visuels" });
+    box.appendChild(el("h3", { texte: "Visuels pour la communication" }));
+    var vs = d.visuels || [];
+    var grille = el("div", { classe: "visuels-grille" });
+    if (!vs.length) box.appendChild(el("p", { classe: "vide-doc", texte: "Aucun visuel. Ceux envoyés par le partenaire avec son lien de mise à jour s'ajoutent ici après validation." }));
+    else sb.storage.from(BUCKET).createSignedUrls(vs.map(function (v) { return v.path; }), 3600).then(function (r) {
+      var urls = {}; ((r && r.data) || []).forEach(function (x) { if (x.signedUrl) urls[x.path] = x.signedUrl; });
+      grille.querySelectorAll("img[data-path]").forEach(function (img) { if (urls[img.getAttribute("data-path")]) img.src = urls[img.getAttribute("data-path")]; });
+    });
+    async function enregistrer(liste, msg) {
+      var r = await sb.from("dossiers").update({ visuels: liste }).eq("id", d.id).select().single();
+      if (r.error) { alerteExport("Erreur : " + r.error.message); return; }
+      for (var i = 0; i < dossiers.length; i++) if (dossiers[i].id === d.id) dossiers[i] = r.data;
+      rendreDetail(r.data, msg);
+    }
+    vs.forEach(function (v) {
+      var bT = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Télécharger" });
+      bT.addEventListener("click", async function () {
+        var r = await sb.storage.from(BUCKET).createSignedUrl(v.path, 300, { download: v.nom });
+        if (r.data && r.data.signedUrl) { var a = el("a", { href: r.data.signedUrl }); document.body.appendChild(a); a.click(); a.remove(); }
+      });
+      var bS = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Retirer" });
+      var carteV = el("div", { classe: "visuel" }, [el("img", { alt: v.nom, "data-path": v.path }), el("span", { classe: "nom-doc", texte: v.nom }), el("span", { classe: "actions-doc" }, [bT, bS])]);
+      bS.addEventListener("click", function () {
+        bS.textContent = "Confirmer"; bS.classList.add("btn-danger");
+        bS.onclick = async function () { await sb.storage.from(BUCKET).remove([v.path]); enregistrer(vs.filter(function (x) { return x.path !== v.path; }), "Visuel retiré."); };
+      });
+      grille.appendChild(carteV);
+    });
+    box.appendChild(grille);
+    var inp = el("input", { type: "file", multiple: "multiple", accept: "image/png,image/jpeg,image/webp", "aria-label": "Visuels à ajouter" });
+    var etat = el("span", { classe: "etat" });
+    var bA = el("button", { type: "button", classe: "btn btn-primaire btn-petit", texte: "Ajouter les visuels" });
+    bA.addEventListener("click", async function () {
+      var fs = Array.prototype.slice.call(inp.files || []);
+      if (!fs.length) { etat.textContent = "Choisissez d'abord les images."; return; }
+      bA.disabled = true; var ajout = [];
+      for (var i = 0; i < fs.length; i++) {
+        etat.textContent = "Envoi " + (i + 1) + " sur " + fs.length + "...";
+        var f = fs[i]; if (f.size > 10 * 1024 * 1024) continue;
+        var path = d.id + "/documents/visuel-" + Date.now() + "-" + f.name.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\w.\-]+/g, "_").slice(-60);
+        var up = await sb.storage.from(BUCKET).upload(path, f, { contentType: f.type, upsert: false });
+        if (!up.error) ajout.push({ path: path, nom: f.name, taille: f.size, ajoute_le: new Date().toISOString(), source: "ffpmi" });
+      }
+      bA.disabled = false;
+      if (!ajout.length) { etat.textContent = "Aucun visuel n'a pu être ajouté (10 Mo maximum par image)."; return; }
+      enregistrer(vs.concat(ajout), ajout.length + " visuel" + (ajout.length > 1 ? "s ajoutés" : " ajouté") + ".");
+    });
+    box.appendChild(el("div", { classe: "ajout-doc" }, [inp, bA, etat]));
+    return box;
+  }
+
+  /* ---------- Export des offres du moment ---------- */
+  $("btn-export-offres").addEventListener("click", function () {
+    var auj = new Date().toISOString().slice(0, 10);
+    var entetes = ["Partenaire", "Type d'offre", "Titre", "Détail", "Avantage", "Code ou modalités", "Début", "Fin", "Site", "Contact", "Email"];
+    var lignes = [];
+    var suspendus = dossiers.filter(function (d) { return d.statut === "accepte" && d.maj_requise; });
+    dossiers.filter(function (d) { return d.statut === "accepte" && !d.maj_requise; }).sort(function (a, b) { return nomAffiche(a).localeCompare(nomAffiche(b), "fr"); }).forEach(function (d) {
+      var contact = [d.contact_prenom, d.contact_nom].filter(Boolean).join(" ");
+      if (d.offre_titre) lignes.push([nomAffiche(d), "Permanente", d.offre_titre, d.offre_description || "", [d.avantage_type, d.avantage_valeur].filter(Boolean).join(" : "), d.offre_modalites || "", d.offre_debut ? dateFr(d.offre_debut) : "", d.offre_fin ? dateFr(d.offre_fin) : "", d.site_web || "", contact, d.contact_email || ""]);
+      (d.offres_ponctuelles || []).filter(function (o) { return !o.fin || o.fin >= auj; }).forEach(function (o) {
+        lignes.push([nomAffiche(d), "Ponctuelle - " + etatOffre(o)[1].toLowerCase(), o.titre, o.description || "", "", o.code || "", o.debut ? dateFr(o.debut) : "", o.fin ? dateFr(o.fin) : "", d.site_web || "", contact, d.contact_email || ""]);
+      });
+    });
+    if (!lignes.length) { alerteExport("Aucune offre en cours pour les partenaires au statut « Accepté »."); return; }
+    telechargerCsv("offres-du-moment-ffpmi-" + jourIso() + ".csv", entetes, lignes);
+    if (suspendus.length && !window.FFPMI_DEMO) alerteExport(suspendus.length + " partenaire" + (suspendus.length > 1 ? "s" : "") + " en attente de mise à jour après reconduction, donc exclu" + (suspendus.length > 1 ? "s" : "") + " de l'export : " + suspendus.map(nomAffiche).join(", ") + ".");
+  });
 
   /* ---------- Fiche PDF pour le conseil d'administration ---------- */
   var CONTREPARTIES_FFPMI = [
