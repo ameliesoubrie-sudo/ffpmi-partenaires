@@ -458,6 +458,95 @@
     return det;
   }
 
+  /* ---------- Suivi des paiements ---------- */
+  var ETAPES = [
+    { cle: "facture_acompte_le", court: "1", libelle: "Facture d'acompte envoyée", montant: function (p) { return acompteDe(p); }, quand: function () { return "à la réservation"; } },
+    { cle: "acompte_recu_le", court: "2", libelle: "Acompte reçu", montant: function (p) { return acompteDe(p); }, quand: function () { return "à la réservation"; } },
+    { cle: "facture_solde_le", court: "3", libelle: "Facture finale envoyée", montant: function (p) { return soldeDe(p); }, quand: function (p) { var d = echeanceSolde(p); return d ? "avant le " + A.dateFr(d) : ""; } },
+    { cle: "solde_recu_le", court: "4", libelle: "Paiement final reçu", montant: function (p) { return soldeDe(p); }, quand: function (p) { var d = echeanceSolde(p); return d ? "échéance le " + A.dateFr(d) : ""; } }
+  ];
+  // Conditions du bon de reservation : 50 % a la reservation, 50 % une semaine avant l'evenement
+  function acompteDe(p) { return p.acompte != null ? Number(p.acompte) : (p.montant != null ? Math.round(Number(p.montant) * 50) / 100 : 0); }
+  function echeanceSolde(p) {
+    var v = evt(p.evenement_id); if (!v || !v.date_debut) return null;
+    var d = new Date(v.date_debut + "T12:00:00"); d.setDate(d.getDate() - 7);
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function soldeEnRetard(p) { var d = echeanceSolde(p); return !!(d && !p.solde_recu_le && p.statut !== "annule" && d < aujourdhuiIso()); }
+  function soldeDe(p) { return Math.round(((Number(p.montant) || 0) - acompteDe(p)) * 100) / 100; }
+  function encaisse(p) {
+    if (p.statut === "annule") return 0;
+    if (p.solde_recu_le) return Number(p.montant) || 0;
+    if (p.acompte_recu_le) return acompteDe(p);
+    if (p.statut === "paye") return Number(p.montant) || 0;
+    return 0;
+  }
+  function aujourdhuiIso() { var d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  // Le suivi avance tout seul avec les paiements (jamais en arriere, jamais si annule)
+  function statutSuivant(p, data) {
+    var x = Object.assign({}, p, data);
+    if (x.statut === "annule") return x.statut;
+    var rang = { propose: 0, reserve: 1, signe: 2, facture: 3, paye: 4 };
+    var vise = x.solde_recu_le ? "paye" : (x.facture_acompte_le || x.acompte_recu_le || x.facture_solde_le ? "facture" : x.statut);
+    return rang[vise] > rang[x.statut] ? vise : x.statut;
+  }
+  async function majEtape(p, cle, valeur, etat) {
+    var data = {}; data[cle] = valeur || null;
+    data.statut = statutSuivant(p, data);
+    return await majParticipation(p, data, etat);
+  }
+  function blocPaiement(p, apres) {
+    var box = el("div", { classe: "evt-paiement" });
+    var etat = el("span", { classe: "etat" });
+    var acompte = texte(p.acompte != null ? p.acompte : "", "number", String(acompteDe(p))); acompte.step = "0.01"; acompte.min = "0";
+    acompte.addEventListener("change", async function () {
+      var n = await majParticipation(p, { acompte: acompte.value === "" ? null : Number(acompte.value) }, etat);
+      if (n) { p = n; apres(n); }
+    });
+    box.appendChild(el("div", { classe: "evt-paiement-tete" }, [
+      el("strong", { texte: "Paiement" }),
+      el("span", { classe: "meta-doc", texte: "Total " + (euros(p.montant) || "0 €") + " TTC" }),
+      el("span", { classe: "evt-paiement-champs" }, [el("label", { classe: "evt-acompte" }, [el("span", { texte: "Acompte (€)" }), acompte])])
+    ]));
+    box.appendChild(el("p", { classe: "evt-echeancier" + (soldeEnRetard(p) ? " retard" : ""), texte: "Conditions du bon de réservation : acompte de " + euros(acompteDe(p)) + " (50 %) à la réservation, solde de " + euros(soldeDe(p)) + " (50 %) une semaine avant l'événement" + (echeanceSolde(p) ? ", soit le " + A.dateFr(echeanceSolde(p)) : "") + "." + (soldeEnRetard(p) ? " Le paiement final est en retard." : "") }));
+    var liste = el("div", { classe: "evt-etapes" });
+    ETAPES.forEach(function (et) {
+      var id = "et-" + p.id.slice(0, 8) + "-" + et.court;
+      var cb = el("input", { type: "checkbox", id: id }); cb.checked = !!p[et.cle];
+      var dt = el("input", { type: "date", "aria-label": "Date : " + et.libelle }); dt.value = p[et.cle] || "";
+      cb.addEventListener("change", async function () {
+        var v = cb.checked ? (dt.value || aujourdhuiIso()) : null;
+        var n = await majEtape(p, et.cle, v, etat); if (n) { p = n; apres(n); }
+      });
+      dt.addEventListener("change", async function () {
+        var n = await majEtape(p, et.cle, dt.value || null, etat); if (n) { p = n; apres(n); }
+      });
+      liste.appendChild(el("div", { classe: "evt-etape" + (p[et.cle] ? " faite" : "") }, [
+        el("label", { for: id }, [cb, el("span", { texte: et.court + ". " + et.libelle }), el("span", { classe: "evt-etape-montant", texte: euros(et.montant(p)) + (et.quand(p) && !p[et.cle] ? " - " + et.quand(p) : "") })]),
+        dt
+      ]));
+    });
+    box.appendChild(liste);
+    box.appendChild(etat);
+    return box;
+  }
+  function pastillesPaiement(p, apres) {
+    var w = el("span", { classe: "evt-pastilles" });
+    ETAPES.forEach(function (et) {
+      var fait = !!p[et.cle];
+      var b = el("button", { type: "button", classe: "evt-pastille" + (fait ? " faite" : ""), texte: et.court,
+        title: et.libelle + " (" + euros(et.montant(p)) + (et.quand(p) ? ", " + et.quand(p) : "") + ")" + (fait ? " : fait le " + A.dateFr(p[et.cle]) + ". Cliquer pour annuler." : ". Cliquer pour valider aujourd'hui.") });
+      if (!fait && et.court === "4" && soldeEnRetard(p)) b.classList.add("retard");
+      b.addEventListener("click", async function () {
+        b.disabled = true;
+        var n = await majEtape(p, et.cle, fait ? null : aujourdhuiIso(), el("span"));
+        if (n) apres(n); else b.disabled = false;
+      });
+      w.appendChild(b);
+    });
+    return w;
+  }
+
   /* ---------- Participations ---------- */
   async function majParticipation(p, data, etat) {
     etat.textContent = "Enregistrement...";
@@ -486,15 +575,17 @@
       var detail = texte(p.detail, "text", "Ex. : stand de 9 m², emplacement n° 12");
       var montant = texte(p.montant, "number"); montant.step = "0.01"; montant.min = "0";
       var statut = selectDe(STATUTS, p.statut);
-      var notes = texte(p.notes, "text", "Notes sur cette participation");
+      var notes = zone(p.notes, "Notes sur cette participation"); notes.rows = 4;
       function lire() { return { formule: formule.value, detail: detail.value.trim() || null, montant: montant.value === "" ? null : Number(montant.value), statut: statut.value, notes: notes.value.trim() || null }; }
       [formule, statut].forEach(function (x) { x.addEventListener("change", function () { majParticipation(p, lire(), etat).then(function (n) { if (n) { p = n; rendreListe(); } }); }); });
-      [detail, montant, notes].forEach(function (x) { x.addEventListener("change", function () { majParticipation(p, lire(), etat).then(function (n) { if (n) p = n; }); }); });
+      [detail, notes].forEach(function (x) { x.addEventListener("change", function () { majParticipation(p, lire(), etat).then(function (n) { if (n) p = n; }); }); });
+      montant.addEventListener("change", function () { majParticipation(p, lire(), etat).then(function (n) { if (n) rendreDetail(); }); });
 
       var docs = (e.documents || []).filter(function (dd) { return dd.participation_id === p.id; });
       var docsL = el("div", { classe: "evt-docs-part" });
       docs.forEach(function (dd) { docsL.appendChild(boutonTelecharger(dd, "Contrat : " + dd.nom)); });
       if (!docs.length) docsL.appendChild(el("span", { classe: "meta-doc", texte: "Aucun contrat ou bon de réservation joint. Ajoutez-le dans « Documents » ci-dessous." }));
+      var paiement = blocPaiement(p, function () { rendreListe(); rendreDetail(); });
 
       var bRet = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Retirer" });
       bRet.addEventListener("click", function () {
@@ -515,6 +606,7 @@
         el("div", { classe: "evt-part-titre" }, [el("strong", { texte: v.nom }), el("span", { classe: "meta-doc", texte: [datesEvt(v), v.lieu].filter(Boolean).join(" - ") })]),
         el("div", { classe: "evt-part-grille" }, [champ("Formule", formule), champ("Détail", detail), champ("Montant TTC (€)", montant), champ("Suivi", statut), champ("Notes", notes, true)]),
         docsL,
+        p.statut === "annule" ? null : paiement,
         el("div", { classe: "evt-part-actions" }, [bRet, etat])
       ]));
     });
@@ -647,7 +739,9 @@
     var toutes = S.parts.filter(function (p) { return p.evenement_id === v.id; });
     var actives = toutes.filter(function (p) { return p.statut !== "annule"; });
     var signees = actives.filter(function (p) { return ["signe", "facture", "paye"].indexOf(p.statut) !== -1; });
-    var payees = actives.filter(function (p) { return p.statut === "paye"; });
+    var totalEnc = actives.reduce(function (t, p) { return t + encaisse(p); }, 0);
+    var aFacturer = actives.filter(function (p) { return !p.facture_acompte_le && !p.solde_recu_le; }).length;
+    var acomptesAttendus = actives.filter(function (p) { return p.facture_acompte_le && !p.acompte_recu_le && !p.solde_recu_le; }).length;
     var somme = function (l) { return l.reduce(function (s, p) { return s + (Number(p.montant) || 0); }, 0); };
     var nbEnt = {}; actives.forEach(function (p) { nbEnt[p.entreprise_id] = 1; });
 
@@ -661,8 +755,10 @@
       pill(signees.length, "contrats signés"),
       pill(actives.length - signees.length, "en attente de signature"),
       pill(euros(somme(actives)) || "0 €", "réservés"),
-      pill(euros(somme(payees)) || "0 €", "encaissés"),
-      pill(euros(somme(actives) - somme(payees)) || "0 €", "restant à encaisser")
+      pill(euros(totalEnc) || "0 €", "encaissés"),
+      pill(euros(somme(actives) - totalEnc) || "0 €", "restant à encaisser"),
+      pill(aFacturer, "facture" + (aFacturer > 1 ? "s" : "") + " d'acompte à envoyer"),
+      pill(acomptesAttendus, "acompte" + (acomptesAttendus > 1 ? "s" : "") + " en attente")
     ]));
     var zoneAjout = el("div", { classe: "evt-ajout" });
     R.appendChild(zoneAjout);
@@ -672,9 +768,9 @@
       .sort(function (a, b) { return a.e.nom.localeCompare(b.e.nom, "fr"); });
 
     var t = el("table");
-    t.appendChild(el("thead", null, [el("tr", null, ["Entreprise", "Formule", "Détail", "Montant TTC", "Suivi", "Contrat", "Contact", ""].map(function (h) { return el("th", { texte: h }); }))]));
+    t.appendChild(el("thead", null, [el("tr", null, ["Entreprise", "Formule", "Détail", "Montant TTC", "Suivi", "Paiement", "Contrat", "Contact", ""].map(function (h) { return el("th", { texte: h }); }))]));
     var tb = el("tbody");
-    if (!lignes.length) tb.appendChild(el("tr", null, [el("td", { colspan: "8", classe: "vide-table", texte: toutes.length ? "Aucune participation ne correspond aux filtres." : "Aucune entreprise pour cet événement. Ajoutez-en une avec le bloc ci-dessus." })]));
+    if (!lignes.length) tb.appendChild(el("tr", null, [el("td", { colspan: "9", classe: "vide-table", texte: toutes.length ? "Aucune participation ne correspond aux filtres." : "Aucune entreprise pour cet événement. Ajoutez-en une avec le bloc ci-dessus." })]));
     lignes.forEach(function (x) {
       var p = x.p, e = x.e;
       var etat = el("span", { classe: "relance" });
@@ -699,7 +795,9 @@
       tb.appendChild(el("tr", { classe: p.statut === "annule" ? "annule" : "" }, [
         el("td", null, [nom, el("span", { classe: "petit", texte: e.categorie || "" })]),
         el("td", null, [formule]), el("td", null, [detail]), el("td", { classe: "num" }, [montant]),
-        el("td", null, [statut, etat]), cellDoc,
+        el("td", null, [statut, etat]),
+        el("td", { classe: "evt-cell-paiement" }, [pastillesPaiement(p, function () { rendreEvenement(); }), el("span", { classe: "petit", texte: (euros(encaisse(p)) || "0 €") + " encaissés" })]),
+        cellDoc,
         el("td", null, [el("span", { texte: [c0.prenom, c0.nom].filter(Boolean).join(" ") }), el("span", { classe: "petit", texte: [c0.email, c0.telephone].filter(Boolean).join(" - ") })]),
         celluleRetirer(p, e)
       ]));
@@ -788,14 +886,16 @@
       return;
     }
     var v = evt(S.vue);
-    var ent2 = ["Entreprise", "Catégorie", "Formule", "Détail", "Montant TTC", "Suivi", "Contrat joint", "Contact principal", "Email", "Téléphone", "Notes"];
+    var ent2 = ["Entreprise", "Catégorie", "Formule", "Détail", "Montant TTC", "Acompte", "Solde", "Facture d'acompte envoyée le", "Acompte reçu le", "Facture finale envoyée le", "Paiement final reçu le", "Encaissé", "Suivi", "Contrat joint", "Contact", "Email", "Téléphone", "Notes"];
     var l2 = S.parts.filter(function (p) { return p.evenement_id === v.id; }).map(function (p) { return { p: p, e: ent(p.entreprise_id) }; })
       .filter(function (x) { return x.e && correspond(x.e); })
       .sort(function (a, b) { return a.e.nom.localeCompare(b.e.nom, "fr"); })
       .map(function (x) {
         var c = contactEvt(x.e);
         var joint = (x.e.documents || []).some(function (dd) { return dd.participation_id === x.p.id; });
-        return [x.e.nom, x.e.categorie || "", x.p.formule, x.p.detail || "", x.p.montant == null ? "" : String(x.p.montant).replace(".", ","), libStatut(x.p.statut), joint ? "Oui" : "Non",
+        return [x.e.nom, x.e.categorie || "", x.p.formule, x.p.detail || "", x.p.montant == null ? "" : String(x.p.montant).replace(".", ","), String(acompteDe(x.p)).replace(".", ","), String(soldeDe(x.p)).replace(".", ","),
+          x.p.facture_acompte_le ? A.dateFr(x.p.facture_acompte_le) : "", x.p.acompte_recu_le ? A.dateFr(x.p.acompte_recu_le) : "", x.p.facture_solde_le ? A.dateFr(x.p.facture_solde_le) : "", x.p.solde_recu_le ? A.dateFr(x.p.solde_recu_le) : "",
+          String(encaisse(x.p)).replace(".", ","), libStatut(x.p.statut), joint ? "Oui" : "Non",
           [c.prenom, c.nom].filter(Boolean).join(" "), c.email || "", c.telephone || "", x.p.notes || ""];
       });
     if (!l2.length) { A.alerteExport("Aucun participant à exporter pour cet événement."); return; }

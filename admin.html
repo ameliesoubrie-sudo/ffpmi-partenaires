@@ -162,6 +162,31 @@
   .evt-logo-boite { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
   .evt-logo-btn { font-size: 12px; font-weight: 600; color: var(--orange-fonce); cursor: pointer; }
   .evt-logo-btn:hover { text-decoration: underline; }
+  .evt-paiement { margin-top: 12px; padding: 12px 14px; background: var(--fond); border-radius: 8px; }
+  .evt-paiement-tete { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin-bottom: 8px; }
+  .evt-paiement-tete strong { color: var(--gris-fonce); }
+  .evt-acompte { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gris); margin-left: auto; }
+  .evt-acompte input { width: 110px; font: inherit; font-size: 13px; border: 1.5px solid var(--gris-ligne); border-radius: 6px; padding: 5px 6px; text-align: right; background: var(--blanc); }
+  .evt-etapes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; }
+  @media (max-width: 760px) { .evt-etapes { grid-template-columns: 1fr; } }
+  .evt-etape { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; background: var(--blanc); border: 1px solid var(--gris-ligne); border-radius: 8px; padding: 8px 10px; }
+  .evt-etape.faite { border-color: var(--vert); background: #F3F9EA; }
+  .evt-etape label { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--gris-fonce); cursor: pointer; }
+  .evt-etape input[type=checkbox] { accent-color: var(--orange); width: 16px; height: 16px; }
+  .evt-etape-montant { font-size: 12px; color: var(--gris); font-variant-numeric: tabular-nums; }
+  .evt-etape input[type=date] { font: inherit; font-size: 13px; border: 1.5px solid var(--gris-ligne); border-radius: 6px; padding: 4px 6px; background: var(--blanc); color: var(--texte); }
+  .evt-paiement .etat { display: block; font-size: 12px; color: var(--gris); margin-top: 6px; min-height: 0; }
+  .evt-pastilles { display: inline-flex; gap: 4px; }
+  .evt-pastille { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--gris-ligne); background: var(--blanc); color: var(--gris); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; padding: 0; }
+  .evt-pastille:hover { border-color: var(--gris); }
+  .evt-paiement-champs { display: inline-flex; flex-wrap: wrap; gap: 10px; margin-left: auto; }
+  .evt-paiement-champs .evt-acompte { margin-left: 0; }
+  .evt-echeancier { font-size: 13px; color: var(--gris-fonce); margin: 0 0 10px; }
+  .evt-echeancier.retard { color: var(--erreur); font-weight: 600; }
+  .evt-pastille.retard { border-color: var(--erreur); color: var(--erreur); }
+  .evt-pastille.faite { background: var(--vert); border-color: var(--vert); color: var(--blanc); }
+  .evt-cell-paiement { white-space: nowrap; }
+  .evt-cell-paiement .petit { margin-top: 4px; }
   .evt-compte { font-size: 12px; color: var(--gris); padding: 8px 14px; border-bottom: 1px solid var(--gris-ligne); background: var(--fond); }
   .badge.evt-b-propose { background: var(--gris-clair); color: var(--gris-fonce); }
   .badge.evt-b-reserve { background: #FEF3DC; color: #8A5B00; }
@@ -185,6 +210,7 @@
   .evt-part-grille { display: grid; grid-template-columns: 1fr 2fr 1fr 1fr; gap: 10px 12px; }
   .evt-part-grille .plein { grid-column: 1 / -1; }
   .evt-part-grille .champ label { font-size: 12px; }
+  .evt-part-grille textarea { min-height: 90px; font-size: 13px; line-height: 1.5; }
   @media (max-width: 760px) { .evt-part-grille { grid-template-columns: 1fr 1fr; } }
   .evt-docs-part { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
   .evt-part-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 10px; }
@@ -192,7 +218,7 @@
   .evt-titre-evt { margin: 4px 0 12px; }
   .evt-titre-evt h2 { margin: 0 0 2px; font-size: 22px; }
   .evt-titre-evt .sous { margin: 0; font-size: 14px; }
-  .evt-table table { min-width: 1080px; }
+  .evt-table table { min-width: 1220px; }
   .evt-table select, .evt-table input[type=text], .evt-table input[type=number] { font: inherit; font-size: 13px; border: 1.5px solid var(--gris-ligne); border-radius: 6px; padding: 5px 6px; background: var(--blanc); color: var(--texte); }
   .evt-table input[type=text] { width: 100%; min-width: 140px; }
   .evt-table input[type=number] { width: 110px; text-align: right; }
