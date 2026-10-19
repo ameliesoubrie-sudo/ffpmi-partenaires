@@ -282,6 +282,7 @@ Troisième onglet de l'espace FFPMI : les entreprises qui participent aux congr�
 - Dans la vue d'un événement, la formule, le détail, le montant et le suivi se modifient directement dans le tableau.
 - Sur la fiche d'une entreprise : informations, contacts, notes internes, participations, documents (contrats, bons de réservation, factures). Un document peut être rattaché à une participation.
 - Suivi des paiements de chaque participation, en 4 étapes datées : 1. facture d'acompte envoyée, 2. acompte reçu, 3. facture finale envoyée, 4. paiement final reçu. Dans la vue d'un événement, les pastilles 1 à 4 se valident d'un clic (date du jour) ; sur la fiche de l'entreprise, on coche chaque étape et on peut corriger la date et le montant de l'acompte. Le suivi passe tout seul à « Facturé » puis « Payé », et les totaux encaissés se mettent à jour.
+- Chaque document a un type (bon de réservation, contrat, devis, facture d'acompte, facture finale, avoir, justificatif de paiement, courrier...). Le type est deviné d'après le nom du fichier et se change dans la liste.
 - « Gérer les événements » permet de créer ou modifier un congrès, un salon ou une rencontre régionale.
 - Les exports CSV suivent les filtres : contacts, liste des entreprises, ou participants d'un événement.
 - Une entreprise qui a aussi une offre adhérents affiche un lien vers son dossier.

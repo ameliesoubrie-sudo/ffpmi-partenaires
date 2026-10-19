@@ -13,6 +13,22 @@
     { v: "propose", l: "Proposé" }, { v: "reserve", l: "Réservé" }, { v: "signe", l: "Contrat signé" },
     { v: "facture", l: "Facturé" }, { v: "paye", l: "Payé" }, { v: "annule", l: "Annulé" }
   ];
+  var TYPES_DOC = ["Bon de réservation", "Contrat", "Devis", "Facture d'acompte", "Facture finale", "Facture", "Avoir", "Justificatif de paiement", "Courrier", "Plan ou fiche technique", "Autre"];
+  function typeDevine(nom) {
+    var n = (nom || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (/reservation|stand_|bon de commande/.test(n)) return "Bon de réservation";
+    if (/avoir/.test(n)) return "Avoir";
+    if (/acompte/.test(n) && /facture/.test(n)) return "Facture d'acompte";
+    if (/(solde|finale?)/.test(n) && /facture/.test(n)) return "Facture finale";
+    if (/facture|invoice/.test(n)) return "Facture";
+    if (/devis|quote/.test(n)) return "Devis";
+    if (/contrat|convention/.test(n)) return "Contrat";
+    if (/courrier|lettre|resiliation/.test(n)) return "Courrier";
+    if (/virement|paiement|recu|justificatif/.test(n)) return "Justificatif de paiement";
+    if (/plan|technique/.test(n)) return "Plan ou fiche technique";
+    return "Autre";
+  }
+  function typeDoc(dd) { return dd.type || typeDevine(dd.nom); }
   var FORMULES = ["Stand", "Sponsoring", "Intervention", "Encart publicitaire", "Lot ou dotation", "Autre"];
   var TYPES_EVT = [["congres", "Congrès"], ["salon", "Salon"], ["regional", "Rencontre régionale"], ["webinaire", "Webinaire"], ["autre", "Autre"]];
   var CH_CONTACT = [["prenom", "Prénom"], ["nom", "Nom"], ["fonction", "Fonction"], ["email", "Email"], ["telephone", "Téléphone"], ["note", "Note"]];
@@ -442,7 +458,7 @@
         var path = e.id + "/documents/" + Date.now() + "-" + nomPropre(fi.name);
         var up = await sb.storage.from(A.BUCKET).upload(path, fi, { contentType: fi.type || "application/pdf", upsert: false });
         if (up.error) { erreurs++; ligne("erreur : " + up.error.message); continue; }
-        var doc = { path: path, nom: fi.name, taille: fi.size, ajoute_le: new Date().toISOString() };
+        var doc = { path: path, nom: fi.name, taille: fi.size, ajoute_le: new Date().toISOString(), type: typeDevine(fi.name) };
         if (p) doc.participation_id = p.id;
         var r = await sb.from("entreprises").update({ documents: (e.documents || []).concat([doc]) }).eq("id", e.id).select().single();
         if (r.error) { erreurs++; ligne("erreur : " + r.error.message); continue; }
@@ -583,8 +599,8 @@
 
       var docs = (e.documents || []).filter(function (dd) { return dd.participation_id === p.id; });
       var docsL = el("div", { classe: "evt-docs-part" });
-      docs.forEach(function (dd) { docsL.appendChild(boutonTelecharger(dd, "Contrat : " + dd.nom)); });
-      if (!docs.length) docsL.appendChild(el("span", { classe: "meta-doc", texte: "Aucun contrat ou bon de réservation joint. Ajoutez-le dans « Documents » ci-dessous." }));
+      docs.forEach(function (dd) { docsL.appendChild(boutonTelecharger(dd, typeDoc(dd) + " : " + dd.nom)); });
+      if (!docs.length) docsL.appendChild(el("span", { classe: "meta-doc", texte: "Aucun document joint à cette participation. Ajoutez-le dans « Documents » ci-dessous." }));
       var paiement = blocPaiement(p, function () { rendreListe(); rendreDetail(); });
 
       var bRet = el("button", { type: "button", classe: "btn btn-secondaire btn-petit", texte: "Retirer" });
@@ -644,7 +660,7 @@
     box.appendChild(el("h3", { texte: "Documents" }));
     var docs = e.documents || [];
     var liste = el("div");
-    if (!docs.length) liste.appendChild(el("p", { classe: "vide-doc", texte: "Aucun document. Ajoutez ici les contrats, bons de réservation de stand ou factures." }));
+    if (!docs.length) liste.appendChild(el("p", { classe: "vide-doc", texte: "Aucun document. Ajoutez ici les bons de réservation, contrats, factures, courriers..." }));
     docs.slice().sort(function (a, b) { return String(b.ajoute_le || "").localeCompare(String(a.ajoute_le || "")); }).forEach(function (dd) {
       var p = dd.participation_id ? S.parts.filter(function (x) { return x.id === dd.participation_id; })[0] : null;
       var v = p ? evt(p.evenement_id) : null;
@@ -666,8 +682,17 @@
         });
       });
       actions.appendChild(bS);
+      var selType = selectDe(TYPES_DOC.indexOf(typeDoc(dd)) === -1 ? TYPES_DOC.concat([typeDoc(dd)]) : TYPES_DOC, typeDoc(dd), { "aria-label": "Type de document", title: "Type de document" });
+      selType.className = "evt-type-doc";
+      selType.addEventListener("change", async function () {
+        var docs2 = (e.documents || []).map(function (x) { return x.path === dd.path ? Object.assign({}, x, { type: selType.value }) : x; });
+        var r = await sb.from("entreprises").update({ documents: docs2 }).eq("id", e.id).select().single();
+        if (r.error) { rendreDetail("Erreur : " + r.error.message); return; }
+        remplacer(S.ents, r.data); e = r.data;
+      });
       liste.appendChild(el("div", { classe: "doc" }, [
-        el("span", { classe: "type-doc" + (v ? " signe" : ""), texte: v ? v.nom.replace(/^Congrès national FFPMI/, "Congrès") : "Document" }),
+        selType,
+        v ? el("span", { classe: "type-doc signe", texte: v.nom.replace(/^Congrès national FFPMI/, "Congrès") }) : null,
         el("span", { classe: "nom-doc", texte: dd.nom }),
         el("span", { classe: "meta-doc", texte: [dd.taille ? Math.max(1, Math.round(dd.taille / 1024)) + " Ko" : "", dd.ajoute_le ? "ajouté le " + A.dateFr(dd.ajoute_le) : ""].filter(Boolean).join(" - ") }),
         actions
@@ -676,8 +701,10 @@
     box.appendChild(liste);
 
     var ps = partsDe(e.id);
-    var rattache = selectDe([["", "Document général"]].concat(ps.map(function (p) { var v = evt(p.evenement_id); return [p.id, "Contrat ou réservation : " + (v ? v.nom : "") + " (" + p.formule + ")"]; })), ps[0] ? ps[0].id : "", { "aria-label": "Rattacher à" });
+    var rattache = selectDe([["", "Non rattaché à un événement"]].concat(ps.map(function (p) { var v = evt(p.evenement_id); return [p.id, "Pour : " + (v ? v.nom : "") + " (" + p.formule + ")"]; })), ps[0] ? ps[0].id : "", { "aria-label": "Rattacher à" });
     var fichier = el("input", { type: "file", accept: "application/pdf,image/png,image/jpeg", "aria-label": "Fichier" });
+    var typeNouveau = selectDe(TYPES_DOC, "Bon de réservation", { "aria-label": "Type de document" });
+    fichier.addEventListener("change", function () { if (fichier.files[0]) typeNouveau.value = typeDevine(fichier.files[0].name) === "Autre" ? typeNouveau.value : typeDevine(fichier.files[0].name); });
     var etat = el("span", { classe: "etat" });
     var bA = el("button", { type: "button", classe: "btn btn-primaire btn-petit", texte: "Ajouter" });
     bA.addEventListener("click", async function () {
@@ -689,14 +716,14 @@
       var path = e.id + "/documents/" + Date.now() + "-" + propre;
       var up = await sb.storage.from(A.BUCKET).upload(path, fi, { contentType: fi.type || "application/pdf", upsert: false });
       if (up.error) { bA.disabled = false; etat.textContent = "Erreur : " + up.error.message; return; }
-      var doc = { path: path, nom: fi.name, taille: fi.size, ajoute_le: new Date().toISOString() };
+      var doc = { path: path, nom: fi.name, taille: fi.size, ajoute_le: new Date().toISOString(), type: typeNouveau.value };
       if (rattache.value) doc.participation_id = rattache.value;
       var r = await sb.from("entreprises").update({ documents: (e.documents || []).concat([doc]) }).eq("id", e.id).select().single();
       bA.disabled = false;
       if (r.error) { etat.textContent = "Erreur : " + r.error.message; return; }
       remplacer(S.ents, r.data); rendreDetail("Document ajouté.");
     });
-    box.appendChild(el("div", { classe: "ajout-doc" }, [rattache, fichier, bA, etat]));
+    box.appendChild(el("div", { classe: "ajout-doc" }, [typeNouveau, rattache, fichier, bA, etat]));
     return box;
   }
 
@@ -768,7 +795,7 @@
       .sort(function (a, b) { return a.e.nom.localeCompare(b.e.nom, "fr"); });
 
     var t = el("table");
-    t.appendChild(el("thead", null, [el("tr", null, ["Entreprise", "Formule", "Détail", "Montant TTC", "Suivi", "Paiement", "Contrat", "Contact", ""].map(function (h) { return el("th", { texte: h }); }))]));
+    t.appendChild(el("thead", null, [el("tr", null, ["Entreprise", "Formule", "Détail", "Montant TTC", "Suivi", "Paiement", "Bon / contrat", "Contact", ""].map(function (h) { return el("th", { texte: h }); }))]));
     var tb = el("tbody");
     if (!lignes.length) tb.appendChild(el("tr", null, [el("td", { colspan: "9", classe: "vide-table", texte: toutes.length ? "Aucune participation ne correspond aux filtres." : "Aucune entreprise pour cet événement. Ajoutez-en une avec le bloc ci-dessus." })]));
     lignes.forEach(function (x) {
@@ -789,7 +816,8 @@
       });
       var docs = (e.documents || []).filter(function (dd) { return dd.participation_id === p.id; });
       var cellDoc = el("td");
-      if (docs.length) cellDoc.appendChild(boutonTelecharger(docs[docs.length - 1], "Voir"));
+      var principaux = docs.filter(function (dd) { return /^(Bon de réservation|Contrat)$/.test(typeDoc(dd)); });
+      if (principaux.length || docs.length) cellDoc.appendChild(boutonTelecharger((principaux.length ? principaux : docs)[(principaux.length ? principaux : docs).length - 1], "Voir"));
       else cellDoc.appendChild(el("span", { classe: "petit", texte: "Non joint" }));
       var c0 = contactEvt(e);
       tb.appendChild(el("tr", { classe: p.statut === "annule" ? "annule" : "" }, [
